@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gira-Brasil</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/jogos.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Fundo animado com partículas de floresta -->
+  <div class="forest-bg">
+    <div class="canopy-layer layer-1"></div>
+    <div class="canopy-layer layer-2"></div>
+    <div class="canopy-layer layer-3"></div>
+    <div class="light-rays"></div>
+    <canvas id="particles"></canvas>
+  </div>
+
+  <!-- Cabeçalho / Navbar -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="assets/logo2.png" alt="Gira-Brasil" class="logo-img" onerror="this.style.display='none'; document.querySelector('.logo-text').style.display='flex'" />
+        <div class="logo-text" style="display:none">
+          <span class="logo-gira">GIRA</span><span class="logo-brasil">-BRASIL</span>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-link active"><b>Início</b></a>
+        <a href="#sobre" class="nav-link"><b>Sobre</b></a>
+        <a href="girabot.html" class="nav-link"><b>Gira-Bot</b></a>
+        <a href="regioes.html" class="btn-regioes">
+        <b>Ver Regiões ➤</b>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-image">
+        <img src="assets/logo.png" alt="Imagem destaque" />
+      </div>
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        Cobertura em tempo real
+      </div>
+      <h1 class="hero-title">
+        <span class="title-line line-1">A Floresta</span>
+        <span class="title-line line-2">Tem <em>Voz</em></span>
+      </h1>
+      <p class="hero-sub">Notícias, dados e histórias da maior biodiversidade do planeta.</p>
+      <div class="hero-cta">
+        <a href="#noticias" class="cta-primary">Principais Notícias</a>
+        <a href="regioes.html" class="cta-secondary">Explorar Regiões</a>
+        <button class="cta-game" id="btn-open-games">
+          <span>🎮</span>
+          Jogos da Floresta
+        </button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">8.5M</span>
+        <span class="stat-label">km² de floresta</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">5</span>
+        <span class="stat-label">regiões cobertas</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">10%</span>
+        <span class="stat-label">da fauna mundial</span>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>Role para ver as notícias</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- Seção de Notícias Destaque -->
+  <section class="noticias-section" id="noticias">
+    <div class="section-header">
+      <div class="section-tag">Em destaque</div>
+      <h2 class="section-title">Últimas <em>Notícias</em></h2>
+      <p class="section-sub">As histórias mais importantes da floresta brasileira</p>
+    </div>
+
+    <div class="noticias-grid">
+
+      <!-- Notícia Principal (destaque) -->
+      <article class="noticia-card card-featured">
+        <div class="card-img-wrap">
+          <div class="card-img img-amazon"></div>
+          <div class="card-overlay"></div>
+          <div class="card-tag">Amazônia</div>
+        </div>
+        <div class="card-body">
+          <time class="card-date">18 Abr 2026</time>
+          <h3 class="card-title">Desmatamento na Amazônia registra queda histórica no primeiro trimestre</h3>
+          <p class="card-excerpt">Dados do INPE apontam redução de 45% em relação ao mesmo período do ano anterior, resultado de fiscalização intensificada e novos acordos internacionais de preservação.</p>
+          <a href="#" class="card-link">Ler matéria completa <span>→</span></a>
+        </div>
+      </article>
+
+      <!-- Notícia 2 -->
+      <article class="noticia-card card-secondary">
+        <div class="card-img-wrap">
+          <div class="card-img img-pantanal"></div>
+          <div class="card-overlay"></div>
+          <div class="card-tag">Pantanal</div>
+        </div>
+        <div class="card-body">
+          <time class="card-date">16 Abr 2026</time>
+          <h3 class="card-title">Onças-pintadas voltam a ser avistadas em áreas devastadas pelo fogo</h3>
+          <p class="card-excerpt">Pesquisadores comemoram o retorno de pelo menos 12 indivíduos monitorados ao coração do Pantanal, dois anos após as queimadas de 2024.</p>
+          <a href="#" class="card-link">Ler matéria <span>→</span></a>
+        </div>
+      </article>
+
+      <!-- Notícia 3 -->
+      <article class="noticia-card card-secondary">
+        <div class="card-img-wrap">
+          <div class="card-img img-cerrado"></div>
+          <div class="card-overlay"></div>
+          <div class="card-tag">Cerrado</div>
+        </div>
+        <div class="card-body">
+          <time class="card-date">17 Mar 2026</time>
+          <h3 class="card-title">Nova espécie de orquídea descoberta nos campos rupestres de Minas Gerais</h3>
+          <p class="card-excerpt">Botânicos da UFMG catalogaram a <em>Habenaria adamantina</em>, A região da descoberta abriga alguns dos ecossistemas mais biodiversos do Brasil.</p>
+          <a href="#" class="card-link">Ler matéria <span>→</span></a>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="noticias-footer">
+      <a href="regioes.html" class="btn-all-news">
+        Ver todas as notícias por região
+        <span class="btn-arrow">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Banner de Regiões -->
+  <section class="regioes-banner">
+    <div class="banner-content">
+      <h2>Explore o Brasil<br><em>por dentro.</em></h2>
+      <p>Clique em qualquer região do mapa e mergulhe nas notícias locais, fauna, flora e dados ambientais.</p>
+      <a href="regioes.html" class="btn-mapa">
+        <span>Abrir mapa interativo</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="banner-map-preview">
+      <div class="map-glow"></div>
+      <svg class="brasil-silhouette" viewBox="0 0 400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M180 20 L220 15 L260 30 L290 20 L310 40 L330 35 L350 55 L360 80 L355 110 L370 130 L380 160 L375 190 L385 220 L380 250 L365 270 L360 300 L340 320 L320 340 L300 350 L280 360 L260 370 L240 365 L220 375 L200 380 L180 370 L160 360 L140 365 L120 355 L100 340 L80 320 L65 300 L55 275 L50 250 L60 225 L55 200 L65 175 L60 150 L70 125 L65 100 L75 75 L90 55 L110 40 L130 30 L155 22 Z" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.6)" stroke-width="1.5"/>
+        <!-- Linhas de região simuladas -->
+        <line x1="200" y1="150" x2="200" y2="320" stroke="rgba(34,197,94,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="120" y1="200" x2="300" y2="200" stroke="rgba(34,197,94,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+        <circle cx="200" cy="150" r="4" fill="rgba(34,197,94,0.8)"/>
+        <circle cx="150" cy="220" r="4" fill="rgba(34,197,94,0.8)"/>
+        <circle cx="250" cy="220" r="4" fill="rgba(34,197,94,0.8)"/>
+        <circle cx="200" cy="280" r="4" fill="rgba(34,197,94,0.8)"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="logo-gira">GIRA</span><span class="logo-brasil">-BRASIL</span>
+        </div>
+        <p>Jornalismo ambiental comprometido com a verdade da floresta.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Regiões</h4>
+          <a href="noticias-norte.html">Norte</a>
+          <a href="noticias-nordeste.html">Nordeste</a>
+          <a href="noticias-centro-oeste.html">Centro-Oeste</a>
+          <a href="noticias-sudeste.html">Sudeste</a>
+          <a href="noticias-sul.html">Sul</a>
+        </div>
+        <div class="footer-col">
+          <h4>Site</h4>
+          <a href="index.html">Início</a>
+          <a href="regioes.html">Mapa de Regiões</a>
+          <a href="#sobre">Sobre</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Gira-Brasil. Todos os direitos reservados.</span>
+      <span class="footer-leaf">🌿</span>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════
+       JOGOS DA FLORESTA — MODAL PRINCIPAL
+       ═══════════════════════════════════ -->
+  <div class="game-overlay" id="game-overlay">
+
+    <!-- ── MENU DE SELEÇÃO ── -->
+    <div class="games-menu" id="games-menu">
+      <div class="games-menu-header">
+        <div class="games-menu-title">🎮 Jogos da Floresta</div>
+        <button class="game-close" id="btn-close-games">✕</button>
+      </div>
+      <p class="games-menu-sub">Aprenda sobre o meio ambiente enquanto joga</p>
+      <div class="games-grid">
+
+        <button class="game-card" data-game="guarda">
+          <div class="game-card-icon">🌿</div>
+          <div class="game-card-info">
+            <strong>Guarda da Floresta</strong>
+            <span>Destrua as motosserras antes que derrubem as árvores</span>
+          </div>
+          <div class="game-card-arrow">→</div>
+        </button>
+
+        <button class="game-card" data-game="fuga">
+          <div class="game-card-icon">🐆</div>
+          <div class="game-card-info">
+            <strong>Fuga do Desmatamento</strong>
+            <span>Guie a onça-pintada pelos obstáculos da floresta</span>
+          </div>
+          <div class="game-card-arrow">→</div>
+        </button>
+
+        <button class="game-card" data-game="chuva">
+          <div class="game-card-icon">🌧️</div>
+          <div class="game-card-info">
+            <strong>Chuva Ácida</strong>
+            <span>Proteja a árvore das gotas ácidas com o guarda-chuva</span>
+          </div>
+          <div class="game-card-arrow">→</div>
+        </button>
+
+        <button class="game-card" data-game="especies">
+          <div class="game-card-icon">🦜</div>
+          <div class="game-card-info">
+            <strong>Identificar Espécies</strong>
+            <span>Reconheça os animais da fauna brasileira</span>
+          </div>
+          <div class="game-card-arrow">→</div>
+        </button>
+
+        <button class="game-card" data-game="rio">
+          <div class="game-card-icon">🌊</div>
+          <div class="game-card-info">
+            <strong>Defender o Rio</strong>
+            <span>Bloqueie o garimpo e o lixo antes de chegarem ao mar</span>
+          </div>
+          <div class="game-card-arrow">→</div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ── PAINEL DE JOGO (compartilhado) ── -->
+    <div class="game-panel" id="game-panel" style="display:none">
+      <div class="game-header">
+        <button class="btn-back" id="btn-back">← Jogos</button>
+        <div class="game-title" id="game-title">—</div>
+        <button class="game-close" id="btn-close-game">✕</button>
+      </div>
+      <div class="game-hud" id="game-hud">
+        <span class="hud-score">Pontos: <strong id="score-val">0</strong></span>
+        <span class="hud-level" id="hud-level-wrap">Nível <strong id="level-val">1</strong></span>
+        <span class="hud-lives" id="hud-lives-wrap">Vidas: <strong id="lives-val">❤️❤️❤️</strong></span>
+      </div>
+      <div class="game-canvas-wrap" id="game-canvas-wrap">
+        <canvas id="game-canvas" width="720" height="380"></canvas>
+        <div class="game-screen" id="game-screen">
+          <h2 id="game-screen-title"></h2>
+          <p id="game-screen-desc"></p>
+          <button class="btn-start-game" id="btn-start-game">Começar!</button>
+        </div>
+      </div>
+      <p class="game-tip" id="game-tip"></p>
+    </div>
+
+  </div>
+
+  <script src="js/particles.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/jogos.js"></script>
+</body>
+</html>

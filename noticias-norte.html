@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GiraBrasil — Notícias: Região Norte</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/noticias.css" />
+</head>
+<body>
+
+  <div class="forest-bg">
+    <div class="canopy-layer layer-1"></div>
+    <div class="canopy-layer layer-2"></div>
+    <div class="canopy-layer layer-3"></div>
+    <div class="light-rays"></div>
+    <canvas id="particles"></canvas>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <a href="index.html">
+          <img src="assets/logo2.png" alt="GiraBrasil" class="logo-img" onerror="this.style.display='none'; document.querySelector('.logo-text').style.display='flex'" />
+          <div class="logo-text" style="display:none">
+            <span class="logo-gira">GIRA</span><span class="logo-brasil">BRASIL</span>
+          </div>
+        </a>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-link">Início</a>
+        <a href="regioes.html" class="nav-link">Regiões</a>
+        <a href="girabot.html" class="nav-link">Gira-Bot</a><a href="regioes.html" class="btn-regioes"><span class="btn-icon">🗺</span> Regiões</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero da região -->
+  <section class="noticias-hero">
+    <nav class="hero-breadcrumb">
+      <a href="index.html">Início</a>
+      <span class="sep">›</span>
+      <a href="regioes.html">Regiões</a>
+      <span class="sep">›</span>
+      <span class="current">Norte</span>
+    </nav>
+    <div class="noticias-hero-tag">
+      <span>🌿</span> Região Norte
+    </div>
+    <h1>Amazônia<br><em>em foco</em></h1>
+    <p class="hero-desc">As últimas notícias sobre a maior floresta tropical do mundo, seus rios, povos e a luta pela sua preservação.</p>
+    <div class="hero-regiao-stats">
+      <div class="regiao-stat"><span class="regiao-stat-val">3.9M</span><span class="regiao-stat-lab">km² de área</span></div>
+      <div class="regiao-stat"><span class="regiao-stat-val">9</span><span class="regiao-stat-lab">estados</span></div>
+      <div class="regiao-stat"><span class="regiao-stat-val">10%</span><span class="regiao-stat-lab">fauna mundial</span></div>
+    </div>
+    <a href="regioes.html" class="btn-voltar-mapa">← Voltar ao mapa</a>
+  </section>
+
+  <!-- Filtros -->
+  <div class="filtros-bar">
+    <span class="filtros-label">Filtrar por:</span>
+    <div class="filtros-list">
+      <button class="filtro-btn active" data-filtro="todos">Todos</button>
+      <button class="filtro-btn" data-filtro="desmatamento">Desmatamento</button>
+      <button class="filtro-btn" data-filtro="fauna">Fauna</button>
+      <button class="filtro-btn" data-filtro="comunidades">Comunidades</button>
+      <button class="filtro-btn" data-filtro="clima">Clima</button>
+    </div>
+  </div>
+
+  <!-- 12 Notícias -->
+  <section class="noticias-12-section">
+    <div class="noticias-12-grid">
+
+      <!-- Notícia 1 — Destaque (span 2) -->
+      <article class="noticia-12-card" data-categoria="desmatamento">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #0a2e1a, #1a5c35 50%, #0f3d22);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Desmatamento</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta">
+            <time class="n12-date">18 Abr 2026</time>
+            <span class="n12-read-time">8 min de leitura</span>
+          </div>
+          <h3 class="n12-title">Desmatamento cai 45% no primeiro trimestre: o que está por trás dos números</h3>
+          <p class="n12-excerpt">Dados do INPE divulgados nesta semana apontam redução histórica nas taxas de desmatamento da Amazônia Legal. Especialistas debatem quais políticas públicas e acordos internacionais tiveram maior impacto na virada dos números.</p>
+          <a href="#" class="n12-link">Ler matéria completa →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 2 -->
+      <article class="noticia-12-card" data-categoria="fauna">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #0f3d22, #14532d 60%, #166534);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Fauna</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta">
+            <time class="n12-date">16 Abr 2026</time>
+            <span class="n12-read-time">5 min</span>
+          </div>
+          <h3 class="n12-title">Boto-cor-de-rosa: nova pesquisa revela rota de migração no Rio Negro</h3>
+          <p class="n12-excerpt">Pesquisadores do INPA marcaram 34 indivíduos com sensores acústicos para mapear o deslocamento dos golfinhos fluviais durante a cheia.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 3 -->
+      <article class="noticia-12-card" data-categoria="comunidades">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #1c3a12, #2d5a1e 60%, #3b7a28);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Comunidades</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta">
+            <time class="n12-date">15 Abr 2026</time>
+            <span class="n12-read-time">6 min</span>
+          </div>
+          <h3 class="n12-title">Indígenas Yanomami retomam controle de terras invadidas por garimpeiros no AM</h3>
+          <p class="n12-excerpt">Operação da FUNAI e Ibama, com apoio das forças federais, resultou na retirada de mais de 400 garimpeiros ilegais da Terra Yanomami.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <div class="noticias-divider">Mais notícias</div>
+
+      <!-- Notícia 4 -->
+      <article class="noticia-12-card" data-categoria="clima">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #0a1f0e, #0f3d22);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Clima</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">14 Abr 2026</time><span class="n12-read-time">4 min</span></div>
+          <h3 class="n12-title">Rio Solimões registra nível histórico na enchente de 2026</h3>
+          <p class="n12-excerpt">A cota do Rio Solimões em Tabatinga ultrapassou 14 metros, afetando mais de 80 comunidades ribeirinhas ao longo do seu curso.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 5 -->
+      <article class="noticia-12-card" data-categoria="fauna">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #132b0f, #204d18);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Fauna</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">12 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Nova espécie de aranha descoberta em Roraima surpreende cientistas</h3>
+          <p class="n12-excerpt">A <em>Theraphosa roraimensis</em> é a maior tarântula registrada na América do Sul e foi encontrada nas serras do norte do estado.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 6 -->
+      <article class="noticia-12-card" data-categoria="desmatamento">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #2a1a06, #5c3d10);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Desmatamento</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">11 Abr 2026</time><span class="n12-read-time">6 min</span></div>
+          <h3 class="n12-title">Incêndios criminosos no Pará: imagens de satélite revelam avanço</h3>
+          <p class="n12-excerpt">Dados do MapBiomas mostram que 78% dos focos de incêndio em 2026 estão sobrepostos a áreas de desmatamento recente no sul do Pará.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 7 -->
+      <article class="noticia-12-card" data-categoria="comunidades">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #0a2e1a, #0d4020);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Comunidades</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">10 Abr 2026</time><span class="n12-read-time">7 min</span></div>
+          <h3 class="n12-title">Ribeirinhos do Amazonas criam cooperativa de pirarucu sustentável</h3>
+          <p class="n12-excerpt">Projeto piloto em 14 comunidades do Médio Solimões transformou a pesca do maior peixe de escamas do mundo em fonte de renda sustentável.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 8 -->
+      <article class="noticia-12-card" data-categoria="clima">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #061a0d, #0f3224);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Clima</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">09 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Amazônia emite mais carbono do que absorve pela 3ª vez seguida</h3>
+          <p class="n12-excerpt">Estudo publicado na revista Nature aponta que partes do leste amazônico se tornaram fontes líquidas de CO₂, revertendo papel histórico da floresta.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 9 -->
+      <article class="noticia-12-card" data-categoria="fauna">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #183a10, #2e6a1c);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Fauna</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">08 Abr 2026</time><span class="n12-read-time">4 min</span></div>
+          <h3 class="n12-title">Arara-azul-de-lear avistada no Pará em área fora de seu habitat tradicional</h3>
+          <p class="n12-excerpt">Registro fotográfico de grupo com 7 indivíduos surpreende ornitólogos e acende debate sobre expansão do território da espécie ameaçada.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 10 -->
+      <article class="noticia-12-card" data-categoria="desmatamento">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #1a0a06, #3d1a0a);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Desmatamento</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">06 Abr 2026</time><span class="n12-read-time">6 min</span></div>
+          <h3 class="n12-title">Operação Amazônia Verde apreende R$ 12 milhões em madeira ilegal no AM</h3>
+          <p class="n12-excerpt">Ibama e PF desmontam esquema de extração ilegal que operava há 8 anos usando documentos falsificados de propriedades rurais do interior do Amazonas.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 11 -->
+      <article class="noticia-12-card" data-categoria="comunidades">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #0a2a1a, #0f4530);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Comunidades</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">04 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Mulheres indígenas do Acre ganham protagonismo na vigilância territorial</h3>
+          <p class="n12-excerpt">Programa de monitoramento participativo treinou 120 mulheres de 8 etnias para usar smartphones e GPS na fiscalização de suas terras demarcadas.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <!-- Notícia 12 -->
+      <article class="noticia-12-card" data-categoria="clima">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #081a0f, #0d2e1a);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Clima</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">02 Abr 2026</time><span class="n12-read-time">7 min</span></div>
+          <h3 class="n12-title">Pesquisa revela que rios voadores da Amazônia são afetados pelo desmatamento</h3>
+          <p class="n12-excerpt">Modelo climático do INPE mostra que a perda de cobertura florestal reduz em até 20% a umidade transportada pelos chamados rios voadores para o Sul e Sudeste do Brasil.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="logo-gira">GIRA</span><span class="logo-brasil">BRASIL</span>
+        </div>
+        <p>Jornalismo ambiental comprometido com a verdade da floresta.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Regiões</h4>
+          <a href="noticias-norte.html">Norte</a>
+          <a href="noticias-nordeste.html">Nordeste</a>
+          <a href="noticias-centro-oeste.html">Centro-Oeste</a>
+          <a href="noticias-sudeste.html">Sudeste</a>
+          <a href="noticias-sul.html">Sul</a>
+        </div>
+        <div class="footer-col">
+          <h4>Site</h4>
+          <a href="index.html">Início</a>
+          <a href="regioes.html">Mapa de Regiões</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 GiraBrasil. Todos os direitos reservados.</span>
+      <span class="footer-leaf">🌿</span>
+    </div>
+  </footer>
+
+  <script src="js/particles.js"></script>
+  <script src="js/noticias.js"></script>
+</body>
+</html>

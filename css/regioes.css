@@ -1,0 +1,413 @@
+/* =============================================
+   GIRABRASIL — REGIOES.CSS
+   Mapa interativo e painel de informações
+   ============================================= */
+
+/* === LAYOUT PRINCIPAL === */
+.regioes-main {
+  position: relative;
+  z-index: var(--z-base);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  padding-top: 80px; /* altura do header */
+  gap: 0;
+}
+
+/* === PAINEL DO MAPA (esquerdo) === */
+.mapa-panel {
+  padding: var(--gap-lg) var(--gap-md) var(--gap-lg) var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  border-right: 1px solid rgba(34,197,94,0.08);
+}
+
+.mapa-header {
+  animation: fadeInUp 0.7s var(--ease-slow) both;
+}
+
+.mapa-title {
+  font-size: clamp(2.5rem, 4vw, 3.8rem);
+  color: var(--texto-branco);
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.0;
+}
+
+.mapa-sub {
+  color: var(--texto-apagado);
+  font-size: 1rem;
+  font-style: italic;
+  max-width: 380px;
+}
+
+/* Container do Mapa SVG */
+.mapa-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.8s 0.3s both;
+}
+
+.mapa-glow {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: breathe 6s ease-in-out infinite;
+}
+
+#mapa-brasil {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  filter: drop-shadow(0 0 30px rgba(34,197,94,0.1));
+}
+
+/* Regiões do Mapa */
+.regiao-path {
+  fill: rgba(15, 61, 34, 0.5);
+  stroke: rgba(34,197,94,0.4);
+  stroke-width: 1.5;
+  transition: all 0.3s var(--ease-smooth);
+  cursor: pointer;
+}
+
+.regiao:hover .regiao-path {
+  fill: rgba(34,197,94,0.2);
+  stroke: rgba(34,197,94,0.8);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 12px rgba(34,197,94,0.5));
+}
+
+.regiao.active .regiao-path {
+  fill: rgba(34,197,94,0.3);
+  stroke: var(--verde-vivo);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 20px rgba(34,197,94,0.7));
+}
+
+.regiao-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: rgba(200,230,208,0.7);
+  text-anchor: middle;
+  pointer-events: none;
+  transition: fill 0.3s ease;
+  letter-spacing: 0.05em;
+}
+
+.regiao:hover .regiao-label,
+.regiao.active .regiao-label {
+  fill: var(--verde-vivo);
+}
+
+/* Legenda */
+.mapa-legenda {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.legenda-item {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--texto-apagado);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legenda-item::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+
+.legenda-normal::before  { background: rgba(15,61,34,0.5); border-color: rgba(34,197,94,0.4); }
+.legenda-hover::before   { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.8); }
+.legenda-selected::before{ background: rgba(34,197,94,0.3); border-color: var(--verde-vivo); }
+
+/* === PAINEL DE INFORMAÇÕES (direito) === */
+.info-panel {
+  padding: var(--gap-lg) var(--gap-lg) var(--gap-lg) var(--gap-md);
+  overflow-y: auto;
+  max-height: calc(100vh - 80px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--verde-medio) transparent;
+}
+
+/* Estado vazio */
+.info-empty {
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  animation: fadeIn 0.6s both;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  animation: float 4s ease-in-out infinite;
+}
+
+.info-empty h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--texto-claro);
+}
+
+.info-empty p {
+  color: var(--texto-apagado);
+  font-size: 0.95rem;
+  max-width: 280px;
+  line-height: 1.65;
+}
+
+/* Conteúdo da região */
+.info-content {
+  animation: slideInRight 0.5s var(--ease-smooth) both;
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.info-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--verde-vivo);
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-xl);
+}
+
+.info-close {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--texto-apagado);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-close:hover {
+  border-color: rgba(255,255,255,0.3);
+  color: var(--texto-branco);
+}
+
+.info-title {
+  font-size: clamp(2.5rem, 4vw, 3.8rem);
+  color: var(--texto-branco);
+  line-height: 1.0;
+  margin-bottom: 1rem;
+}
+
+.info-desc {
+  color: var(--texto-claro);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+/* Stats da região */
+.info-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: rgba(15,61,34,0.35);
+  border: 1px solid rgba(34,197,94,0.12);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.stat-box:hover {
+  border-color: rgba(34,197,94,0.3);
+}
+
+.stat-box-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--verde-vivo);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.stat-box-label {
+  font-size: 0.75rem;
+  color: var(--texto-apagado);
+  line-height: 1.3;
+}
+
+/* Seções de conteúdo */
+.info-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-apagado);
+  margin-bottom: 0.75rem;
+}
+
+.info-biomas,
+.info-fauna {
+  margin-bottom: 2rem;
+}
+
+/* Biomas */
+.biomas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bioma-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.9rem;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: var(--radius-xl);
+  color: var(--verde-brilho);
+  transition: all 0.2s ease;
+}
+
+.bioma-tag:hover {
+  background: rgba(34,197,94,0.15);
+  border-color: rgba(34,197,94,0.4);
+}
+
+/* Fauna */
+.fauna-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.fauna-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(10,46,26,0.4);
+  border: 1px solid rgba(34,197,94,0.1);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.fauna-item:hover {
+  border-color: rgba(34,197,94,0.25);
+  background: rgba(10,46,26,0.6);
+  transform: translateX(3px);
+}
+
+.fauna-emoji {
+  font-size: 1.2rem;
+}
+
+.fauna-name {
+  font-size: 0.85rem;
+  color: var(--texto-claro);
+}
+
+/* Botão de notícias */
+.btn-ver-noticias {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.1rem;
+  background: var(--verde-vivo);
+  color: var(--preto-floresta);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-top: 1rem;
+  transition: all 0.3s var(--ease-spring);
+  box-shadow: 0 0 30px rgba(34,197,94,0.3), 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.btn-ver-noticias:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 50px rgba(34,197,94,0.5), 0 8px 25px rgba(0,0,0,0.4);
+  background: var(--verde-brilho);
+}
+
+.btn-ver-noticias svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-ver-noticias:hover svg {
+  transform: translateX(5px);
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 900px) {
+  .regioes-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .mapa-panel {
+    padding: var(--gap-md);
+    border-right: none;
+    border-bottom: 1px solid rgba(34,197,94,0.08);
+  }
+
+  .info-panel {
+    padding: var(--gap-md);
+    max-height: none;
+  }
+
+  .info-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .info-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .fauna-list {
+    grid-template-columns: 1fr;
+  }
+}

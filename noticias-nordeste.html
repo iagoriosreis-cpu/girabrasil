@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GiraBrasil — Notícias: Região Nordeste</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/noticias.css" />
+</head>
+<body>
+
+  <div class="forest-bg">
+    <div class="canopy-layer layer-1"></div>
+    <div class="canopy-layer layer-2"></div>
+    <div class="canopy-layer layer-3"></div>
+    <div class="light-rays"></div>
+    <canvas id="particles"></canvas>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <a href="index.html">
+          <img src="assets/logo2.png" alt="GiraBrasil" class="logo-img" onerror="this.style.display='none'; document.querySelector('.logo-text').style.display='flex'" />
+          <div class="logo-text" style="display:none"><span class="logo-gira">GIRA</span><span class="logo-brasil">BRASIL</span></div>
+        </a>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-link">Início</a>
+        <a href="regioes.html" class="nav-link">Regiões</a>
+        <a href="girabot.html" class="nav-link">Gira-Bot</a>
+        <a href="regioes.html" class="btn-regioes"><span class="btn-icon">🗺</span> Regiões</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="noticias-hero">
+    <nav class="hero-breadcrumb">
+      <a href="index.html">Início</a><span class="sep">›</span>
+      <a href="regioes.html">Regiões</a><span class="sep">›</span>
+      <span class="current">Nordeste</span>
+    </nav>
+    <div class="noticias-hero-tag"><span>🌵</span> Região Nordeste</div>
+    <h1>Caatinga e<br><em>Costa</em></h1>
+    <p class="hero-desc">Da vegetação exclusivamente brasileira da Caatinga aos recifes de coral do litoral, o Nordeste concentra biomas únicos em permanente estado de alerta.</p>
+    <div class="hero-regiao-stats">
+      <div class="regiao-stat"><span class="regiao-stat-val">1.5M</span><span class="regiao-stat-lab">km² de área</span></div>
+      <div class="regiao-stat"><span class="regiao-stat-val">9</span><span class="regiao-stat-lab">estados</span></div>
+      <div class="regiao-stat"><span class="regiao-stat-val">3.8k km</span><span class="regiao-stat-lab">de litoral</span></div>
+    </div>
+    <a href="regioes.html" class="btn-voltar-mapa">← Voltar ao mapa</a>
+  </section>
+
+  <div class="filtros-bar">
+    <span class="filtros-label">Filtrar por:</span>
+    <div class="filtros-list">
+      <button class="filtro-btn active" data-filtro="todos">Todos</button>
+      <button class="filtro-btn" data-filtro="caatinga">Caatinga</button>
+      <button class="filtro-btn" data-filtro="litoral">Litoral</button>
+      <button class="filtro-btn" data-filtro="seca">Seca</button>
+      <button class="filtro-btn" data-filtro="fauna">Fauna</button>
+    </div>
+  </div>
+
+  <section class="noticias-12-section">
+    <div class="noticias-12-grid">
+
+      <article class="noticia-12-card" data-categoria="caatinga">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #3d2a06, #7a5215, #a0720a);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Caatinga</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">17 Abr 2026</time><span class="n12-read-time">7 min</span></div>
+          <h3 class="n12-title">Caatinga resiliente: como o bioma se recupera após cinco anos de seca severa</h3>
+          <p class="n12-excerpt">Pesquisadores documentam a surpreendente capacidade de regeneração da vegetação endêmica do semiárido após a chegada das chuvas de 2025, com registro de espécies consideradas regionalmente extintas.</p>
+          <a href="#" class="n12-link">Ler matéria completa →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="litoral">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #062a3d, #0a4a6e, #0d5e8a);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Litoral</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">15 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Recifes de coral do Abrolhos ameaçados por bleaching recorde</h3>
+          <p class="n12-excerpt">Temperatura do mar 2,5°C acima da média histórica causou o maior branqueamento já registrado no Banco dos Abrolhos, ameaçando o maior banco de corais do Atlântico Sul.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="seca">
+        <div class="n12-img">
+          <div class="n12-img-inner" style="background: linear-gradient(135deg, #3d1a06, #6b3010, #8b4513);"></div>
+          <div class="n12-img-overlay"></div>
+          <span class="n12-category">Seca</span>
+        </div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">13 Abr 2026</time><span class="n12-read-time">6 min</span></div>
+          <h3 class="n12-title">Açudes do semiárido atingem menor nível desde 2017 no Ceará e RN</h3>
+          <p class="n12-excerpt">Açude Castanhão, que abastece mais de 1 milhão de pessoas na região metropolitana de Fortaleza, está com apenas 8% de sua capacidade total.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <div class="noticias-divider">Mais notícias</div>
+
+      <article class="noticia-12-card" data-categoria="fauna">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #1a2e06, #355c10);"></div><div class="n12-img-overlay"></div><span class="n12-category">Fauna</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">11 Abr 2026</time><span class="n12-read-time">4 min</span></div>
+          <h3 class="n12-title">Tartarugas marinhas batem recorde de desova em Sergipe</h3>
+          <p class="n12-excerpt">Projeto TAMAR registra 4.200 ninhos na temporada 2025-26, o maior número desde o início do monitoramento sistemático na região.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="caatinga">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #2a1506, #5c3a10);"></div><div class="n12-img-overlay"></div><span class="n12-category">Caatinga</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">09 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Abelhas nativas da Caatinga resistem à seca com técnicas ancestrais</h3>
+          <p class="n12-excerpt">Estudo com 14 espécies endêmicas revela que meliponíneos do semiárido desenvolveram estratégias comportamentais únicas para sobreviver ao estresse hídrico.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="litoral">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #062435, #0a3d5c);"></div><div class="n12-img-overlay"></div><span class="n12-category">Litoral</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">07 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Manguezais do Maranhão avançam sobre áreas degradadas após projeto de restauração</h3>
+          <p class="n12-excerpt">Iniciativa liderada por comunidades quilombolas recupera 800 hectares de manguezal na Baixada Maranhense em apenas três anos.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="seca">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #2e1a06, #5c3810);"></div><div class="n12-img-overlay"></div><span class="n12-category">Seca</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">05 Abr 2026</time><span class="n12-read-time">6 min</span></div>
+          <h3 class="n12-title">Cisternas inteligentes usam IoT para otimizar captação de água da chuva</h3>
+          <p class="n12-excerpt">Projeto piloto em Pernambuco equipa 500 cisternas rurais com sensores que enviam dados ao celular do agricultor, reduzindo desperdício em 60%.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="fauna">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #0d2e10, #1a5220);"></div><div class="n12-img-overlay"></div><span class="n12-category">Fauna</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">04 Abr 2026</time><span class="n12-read-time">4 min</span></div>
+          <h3 class="n12-title">Peixe-boi marinho volta a ser avistado na costa do Piauí após 12 anos</h3>
+          <p class="n12-excerpt">Grupo de 3 indivíduos foi filmado por pescadores artesanais na APA do Delta do Parnaíba, sinal de recuperação da espécie criticamente ameaçada.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="caatinga">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #3a2206, #6e4510);"></div><div class="n12-img-overlay"></div><span class="n12-category">Caatinga</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">02 Abr 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Umbu-cajá: fruto da Caatinga conquista mercado de cosméticos premium</h3>
+          <p class="n12-excerpt">Cooperativa de agricultores familiares da Bahia exporta óleo do fruto para marcas europeias, gerando renda e incentivando a conservação da espécie nativa.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="litoral">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #062030, #0a3652);"></div><div class="n12-img-overlay"></div><span class="n12-category">Litoral</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">30 Mar 2026</time><span class="n12-read-time">6 min</span></div>
+          <h3 class="n12-title">Erosão costeira ameaça 40% das praias do Rio Grande do Norte</h3>
+          <p class="n12-excerpt">Levantamento do IBGE aponta que a linha de costa recuou até 3 metros ao ano em alguns pontos, colocando em risco comunidades e ecossistemas litorâneos.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="fauna">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #0f2e15, #1e5228);"></div><div class="n12-img-overlay"></div><span class="n12-category">Fauna</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">28 Mar 2026</time><span class="n12-read-time">5 min</span></div>
+          <h3 class="n12-title">Araras-canindé formam colônia inédita em área urbana de Natal</h3>
+          <p class="n12-excerpt">Grupo de 18 araras-canindé estabeleceu ninho permanente em área de proteção ambiental no bairro de Neópolis, surpreendendo moradores e especialistas.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+      <article class="noticia-12-card" data-categoria="seca">
+        <div class="n12-img"><div class="n12-img-inner" style="background: linear-gradient(135deg, #2e1806, #5c3610);"></div><div class="n12-img-overlay"></div><span class="n12-category">Seca</span></div>
+        <div class="n12-body">
+          <div class="n12-meta"><time class="n12-date">26 Mar 2026</time><span class="n12-read-time">7 min</span></div>
+          <h3 class="n12-title">Transposição do São Francisco: balanço após 10 anos de operação</h3>
+          <p class="n12-excerpt">Obra leva água para mais de 12 milhões de pessoas em 4 estados, mas ambientalistas cobram avanços nos programas de revitalização do rio que precisam acompanhar o projeto.</p>
+          <a href="#" class="n12-link">Ler matéria →</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo"><span class="logo-gira">GIRA</span><span class="logo-brasil">BRASIL</span></div>
+        <p>Jornalismo ambiental comprometido com a verdade da floresta.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Regiões</h4>
+          <a href="noticias-norte.html">Norte</a>
+          <a href="noticias-nordeste.html">Nordeste</a>
+          <a href="noticias-centro-oeste.html">Centro-Oeste</a>
+          <a href="noticias-sudeste.html">Sudeste</a>
+          <a href="noticias-sul.html">Sul</a>
+        </div>
+        <div class="footer-col">
+          <h4>Site</h4>
+          <a href="index.html">Início</a>
+          <a href="regioes.html">Mapa</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 GiraBrasil.</span>
+      <span class="footer-leaf">🌿</span>
+    </div>
+  </footer>
+
+  <script src="js/particles.js"></script>
+  <script src="js/noticias.js"></script>
+</body>
+</html>

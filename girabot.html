@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GiraBrasil — Gira-Bot</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/girabot.css" />
+</head>
+<body>
+
+  <!-- Fundo floresta -->
+  <div class="forest-bg">
+    <div class="canopy-layer layer-1"></div>
+    <div class="canopy-layer layer-2"></div>
+    <div class="canopy-layer layer-3"></div>
+    <div class="light-rays"></div>
+    <canvas id="particles"></canvas>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <a href="index.html">
+          <img src="assets/logo2.png" alt="GiraBrasil" class="logo-img"
+               onerror="this.style.display='none'; document.querySelector('.logo-text').style.display='flex'" />
+          <div class="logo-text" style="display:none">
+            <span class="logo-gira">GIRA</span><span class="logo-brasil">BRASIL</span>
+          </div>
+        </a>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-link">Início</a>
+        <a href="regioes.html" class="nav-link">Regiões</a>
+        <a href="girabot.html" class="nav-link active">Gira-Bot</a>
+        <a href="regioes.html" class="btn-regioes">
+          <span class="btn-icon">🗺</span> Regiões
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Layout principal do chat -->
+  <main class="girabot-main">
+
+    <!-- Sidebar esquerda -->
+    <aside class="girabot-sidebar">
+      <!-- Avatar / Logo do Bot -->
+      <div class="bot-identity">
+        <div class="bot-avatar">
+          <div class="bot-avatar-ring"></div>
+          <div class="bot-avatar-inner">
+            <img src="assets/girabot-logo.png" alt="Gira-Bot"
+                 onerror="this.style.display='none'; document.getElementById('bot-svg-fallback').style.display='flex'" />
+            <div id="bot-svg-fallback" class="bot-svg-icon" style="display:none">
+              <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Cabeça do bot -->
+                <circle cx="30" cy="22" r="14" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.6)" stroke-width="1.5"/>
+                <!-- Olhos -->
+                <circle cx="24" cy="20" r="3" fill="rgba(34,197,94,0.8)"/>
+                <circle cx="36" cy="20" r="3" fill="rgba(34,197,94,0.8)"/>
+                <circle cx="25" cy="19" r="1" fill="#040d07"/>
+                <circle cx="37" cy="19" r="1" fill="#040d07"/>
+                <!-- Boca sorridente -->
+                <path d="M24 26 Q30 31 36 26" stroke="rgba(34,197,94,0.8)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                <!-- Antena -->
+                <line x1="30" y1="8" x2="30" y2="3" stroke="rgba(34,197,94,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="30" cy="2" r="2" fill="rgba(34,197,94,0.9)"/>
+                <!-- Corpo / folha decorativa -->
+                <path d="M18 36 Q30 28 42 36 Q36 50 30 52 Q24 50 18 36Z" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.4)" stroke-width="1"/>
+                <!-- Veias da folha -->
+                <line x1="30" y1="36" x2="30" y2="50" stroke="rgba(34,197,94,0.3)" stroke-width="0.8"/>
+                <line x1="30" y1="40" x2="23" y2="44" stroke="rgba(34,197,94,0.2)" stroke-width="0.8"/>
+                <line x1="30" y1="40" x2="37" y2="44" stroke="rgba(34,197,94,0.2)" stroke-width="0.8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="bot-status-dot"></div>
+        </div>
+        <div class="bot-info">
+          <h2 class="bot-name"><i>Gira-Bot</i></h2>
+          <p class="bot-tagline">IA da Floresta Brasileira</p>
+          <div class="bot-online">
+            <span class="online-dot"></span>
+            <span>Online agora</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Separador -->
+      <div class="sidebar-divider"></div>
+
+      <!-- Sugestões de perguntas -->
+      <div class="sugestoes-section">
+        <h3 class="sugestoes-titulo">Perguntas sugeridas</h3>
+        <div class="sugestoes-list" id="sugestoes-list">
+          <button class="sugestao-btn" data-pergunta="Qual é o bioma mais ameaçado do Brasil atualmente?">
+            <span class="sugestao-icon">🌿</span>
+            Qual o bioma mais ameaçado do Brasil?
+          </button>
+          <button class="sugestao-btn" data-pergunta="Me conte sobre os animais em extinção na Amazônia.">
+            <span class="sugestao-icon">🐆</span>
+            Animais em extinção na Amazônia
+          </button>
+          <button class="sugestao-btn" data-pergunta="O que são os rios voadores e qual sua importância?">
+            <span class="sugestao-icon">💧</span>
+            O que são os rios voadores?
+          </button>
+          <button class="sugestao-btn" data-pergunta="Como o desmatamento afeta o clima no Brasil?">
+            <span class="sugestao-icon">🌡️</span>
+            Como o desmatamento afeta o clima?
+          </button>
+          <button class="sugestao-btn" data-pergunta="Me fale sobre os povos indígenas e sua importância para a floresta.">
+            <span class="sugestao-icon">🪶</span>
+            Povos indígenas e a floresta
+          </button>
+          <button class="sugestao-btn" data-pergunta="Quais as diferenças entre Cerrado, Caatinga e Mata Atlântica?">
+            <span class="sugestao-icon">🌳</span>
+            Diferenças entre os biomas
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Botão nova conversa -->
+      <button class="btn-nova-conversa" id="btn-nova-conversa">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Nova conversa
+      </button>
+
+      <!-- Aviso de tema -->
+      <div class="sidebar-aviso">
+        <span class="aviso-icon">🌱</span>
+        <p>O Gira-Bot é especializado em <strong>natureza e meio ambiente brasileiro</strong>. Perguntas fora desse tema serão redirecionadas.</p>
+      </div>
+    </aside>
+
+    <!-- Área principal do chat -->
+    <div class="chat-area">
+
+      <!-- Tela de boas-vindas (some quando chat começa) -->
+      <div class="chat-welcome" id="chat-welcome">
+        <div class="welcome-bot-glow"></div>
+        <div class="welcome-avatar">
+          <div class="welcome-avatar-ring ring-1"></div>
+          <div class="welcome-avatar-ring ring-2"></div>
+          <div class="welcome-avatar-core">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+              <circle cx="40" cy="28" r="18" fill="rgba(34,197,94,0.12)" stroke="rgba(34,197,94,0.5)" stroke-width="1.5"/>
+              <circle cx="32" cy="25" r="4" fill="rgba(34,197,94,0.9)"/>
+              <circle cx="48" cy="25" r="4" fill="rgba(34,197,94,0.9)"/>
+              <circle cx="33.5" cy="23.5" r="1.5" fill="#040d07"/>
+              <circle cx="49.5" cy="23.5" r="1.5" fill="#040d07"/>
+              <path d="M32 33 Q40 39 48 33" stroke="rgba(34,197,94,0.9)" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <line x1="40" y1="10" x2="40" y2="4" stroke="rgba(34,197,94,0.7)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="40" cy="3" r="3" fill="rgba(34,197,94,1)"/>
+              <path d="M22 46 Q40 36 58 46 Q50 64 40 67 Q30 64 22 46Z" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.35)" stroke-width="1"/>
+              <line x1="40" y1="46" x2="40" y2="65" stroke="rgba(34,197,94,0.25)" stroke-width="1"/>
+            </svg>
+          </div>
+        </div>
+        <h2 class="welcome-title">Olá! Eu sou o <em>Gira-Bot</em></h2>
+        <p class="welcome-desc">Sua inteligência artificial especializada na natureza e florestas do Brasil. Pergunte sobre biomas, fauna, flora, desmatamento, povos da floresta e muito mais.</p>
+        <div class="welcome-chips">
+          <span class="welcome-chip">🌿 Amazônia</span>
+          <span class="welcome-chip">🐆 Fauna brasileira</span>
+          <span class="welcome-chip">💧 Recursos hídricos</span>
+          <span class="welcome-chip">🌱 Preservação</span>
+          <span class="welcome-chip">🪶 Povos indígenas</span>
+          <span class="welcome-chip">🔥 Queimadas</span>
+        </div>
+      </div>
+
+      <!-- Mensagens do chat -->
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <!-- Input de mensagem -->
+      <div class="chat-input-wrap">
+        <div class="chat-input-box" id="chat-input-box">
+          <textarea
+            id="chat-input"
+            class="chat-input"
+            placeholder="Pergunte sobre a floresta brasileira..."
+            rows="1"
+          ></textarea>
+          <button class="chat-send-btn" id="chat-send-btn" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+        <p class="chat-disclaimer">
+          Gira-Bot pode cometer erros. Verifique informações importantes em fontes especializadas como INPE, ICMBio e IBAMA.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/particles.js"></script>
+  <script src="js/girabot.js"></script>
+</body>
+</html>
