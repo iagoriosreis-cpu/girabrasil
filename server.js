@@ -123,6 +123,8 @@ const server = http.createServer((req, res) => {
         groqRes.on('data', chunk => { data += chunk; });
         groqRes.on('end', () => {
           try {
+            console.log('Groq status:', groqRes.statusCode);
+            console.log('Groq resposta raw:', data);
             const json = JSON.parse(data);
             const resposta = json.choices?.[0]?.message?.content;
 
@@ -140,6 +142,7 @@ const server = http.createServer((req, res) => {
       });
 
       groqReq.on('error', (e) => {
+        console.error('Erro na requisição Groq:', e.message);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Erro de conexão com a IA' }));
       });
