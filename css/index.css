@@ -112,7 +112,7 @@
 }
 
 .cta-primary {
-  padding: 0.9rem 2.2rem;
+  padding: 0.9rem 2.15rem;
   background: var(--verde-vivo);
   color: var(--preto-floresta);
   border-radius: var(--radius-xl);
@@ -122,6 +122,7 @@
   letter-spacing: 0.06em;
   transition: all 0.3s var(--ease-spring);
   box-shadow: 0 0 30px rgba(34,197,94,0.4), 0 4px 15px rgba(0,0,0,0.3);
+  text-align: center;
 }
 
 .cta-primary:hover {
@@ -131,7 +132,7 @@
 }
 
 .cta-secondary {
-  padding: 0.9rem 1.8rem;
+  padding: 0.9rem 2.93rem;
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-xl);
   font-family: var(--font-mono);
@@ -139,6 +140,7 @@
   letter-spacing: 0.06em;
   color: var(--texto-claro);
   transition: all 0.3s var(--ease-smooth);
+  text-align: center;
 }
 
 .cta-secondary:hover {
@@ -521,22 +523,53 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.5rem 0;
 }
 
 .map-glow {
   position: absolute;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(34,197,94,0.2) 0%, transparent 70%);
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 68%);
   border-radius: 50%;
-  animation: breathe 4s ease-in-out infinite;
+  animation: breathe 5s ease-in-out infinite;
+  pointer-events: none;
 }
 
+/* ── Mapa SVG real no banner ── */
 .brasil-silhouette {
-  width: 260px;
+  width: 290px;
   height: auto;
-  filter: drop-shadow(0 0 20px rgba(34,197,94,0.3));
-  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 16px rgba(34,197,94,0.22));
+  animation: float 7s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Cada polígono de estado, agrupado por região */
+.banner-path {
+  stroke-width: 0.6;
+  transition: opacity 0.4s ease;
+}
+
+/* cores base por região */
+.norte-path        { fill: #0f4a28; stroke: rgba(34,197,94,0.55); }
+.nordeste-path     { fill: #1a5c2a; stroke: rgba(34,197,94,0.55); }
+.centro-oeste-path { fill: #155220; stroke: rgba(34,197,94,0.55); }
+.sudeste-path      { fill: #0d4020; stroke: rgba(34,197,94,0.55); }
+.sul-path          { fill: #0a3018; stroke: rgba(34,197,94,0.55); }
+
+/* glow sequencial por região */
+.banner-regiao-group.norte        { animation: brilho-regiao 10s 0.0s ease-in-out infinite; }
+.banner-regiao-group.nordeste     { animation: brilho-regiao 10s 2.0s ease-in-out infinite; }
+.banner-regiao-group.centro-oeste { animation: brilho-regiao 10s 4.0s ease-in-out infinite; }
+.banner-regiao-group.sudeste      { animation: brilho-regiao 10s 6.0s ease-in-out infinite; }
+.banner-regiao-group.sul          { animation: brilho-regiao 10s 8.0s ease-in-out infinite; }
+
+@keyframes brilho-regiao {
+  0%, 100% { opacity: 0.72; }
+  10%       { opacity: 1; filter: brightness(1.7) drop-shadow(0 0 6px rgba(34,197,94,0.9)); }
+  22%       { opacity: 0.72; filter: none; }
 }
 
 /* === RESPONSIVIDADE === */

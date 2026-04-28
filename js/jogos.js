@@ -144,7 +144,6 @@
       case 'guarda':   initGuarda();   break;
       case 'fuga':     initFuga();     break;
       case 'chuva':    initChuva();    break;
-      case 'especies': initEspecies(); break;
       case 'rio':      initRio();      break;
     }
   }
@@ -219,18 +218,234 @@
 
     const GH=H; const GROUND=GH-50;
     let score=0,lives=3,level=1,running=false,dist=0;
-    let onca={x:90,y:GROUND,vy:0,onGround:true,ducking:false,w:44,h:40};
+    let onca={x:90,y:GROUND,vy:0,onGround:true,ducking:false,w:48,h:32};
     let obstacles=[],powerups=[],bgX=0,speed=3.2,tick=0,obsTick=0,obsInterval=110;
+    let groundX = 0; 
     const JUMP_V=-11.5, GRAVITY=0.55;
+    let jumpTime = 0;
+    let jumpDuration = 30;
+
+    /* ── PIXEL ART SPRITES ── */
+    const P = 4; // tamanho de cada "pixel" (escala)
+
+    /* Paleta da onça */
+    const Y  = '#f59e0b'; // amarelo-dourado
+    const YL = '#fde68a'; // amarelo claro (barriga)
+    const BK = '#1c0a00'; // preto/manchas
+    const _  = null;      // transparente
+
+
+//ONÇA CORRENDO
+const imgRun1 = new Image();
+imgRun1.src = 'assets/onca1.png';
+
+const imgRun2 = new Image();
+imgRun2.src = 'assets/onca2.png';
+
+const imgRun3 = new Image();
+imgRun3.src = 'assets/onca3.png';
+
+const imgRun4 = new Image();
+imgRun4.src = 'assets/onca4.png';
+
+const imgRun5 = new Image();
+imgRun5.src = 'assets/onca5.png';
+
+const imgRun6 = new Image();
+imgRun6.src = 'assets/onca6.png';
+
+const imgRun7 = new Image();
+imgRun7.src = 'assets/onca7.png';
+
+const imgRun8 = new Image();
+imgRun8.src = 'assets/onca8.png';
+
+// ONÇA PULANDO
+const imgJump1 = new Image();
+imgJump1.src = 'assets/onca2.png';
+
+const imgJump2 = new Image();
+imgJump2.src = 'assets/onca3.png';
+
+const imgJump3 = new Image();
+imgJump3.src = 'assets/onca4.png';
+
+const imgJump4 = new Image();
+imgJump4.src = 'assets/onca5.png';
+
+const imgJump5 = new Image();
+imgJump5.src = 'assets/onca6.png';
+
+//FOGO
+const fireImg1 = new Image();
+fireImg1.src = 'assets/1F.png';
+
+const fireImg2 = new Image();
+fireImg2.src = 'assets/2F.png';
+
+const fireImg3 = new Image();
+fireImg3.src = 'assets/3F.png';
+
+const fireImg4 = new Image();
+fireImg4.src = 'assets/4F.png';
+
+const fireImg5 = new Image();
+fireImg5.src = 'assets/5F.png';
+
+const fireImg6 = new Image();
+fireImg6.src = 'assets/6F.png';
+
+
+//CHÃO
+const groundImg = new Image();
+groundImg.src = 'assets/chao.png'; 
+
+    function drawPixelSprite(sprite, px, py, scale) {
+      const s = scale || P;
+      sprite.forEach((row, ry) => {
+        row.forEach((col, rx) => {
+          if (!col) return;
+          ctx.fillStyle = col;
+          ctx.fillRect(px + rx * s, py + ry * s, s, s);
+        });
+      });
+    }
+function drawOnca() {
+  let img;
+  
+const distToGround = GROUND - onca.y;
+
+if (!onca.onGround) {
+
+  const t = jumpTime / jumpDuration;
+
+  if (t < 0.2) {
+    img = imgJump1; // início (baixo)
+  } 
+  else if (t < 0.4) {
+    img = imgJump2; // subida
+  } 
+  else if (t < 0.6) {
+    img = imgJump3; // topo
+  } 
+  else if (t < 0.8) {
+    img = imgJump4; // descida
+  } 
+  else {
+    img = imgJump5; // aterrissagem
+  }
+
+}
+   else {
+    // 🟢 no chão → animação com 3 frames
+    const frame = Math.floor(tick / 2.4) % 8;
+
+    if (frame === 0) img = imgRun1;
+    else if (frame === 1) img = imgRun2;
+    else if (frame === 2) img = imgRun3;
+    else if (frame === 3) img = imgRun4;
+    else if (frame === 4) img = imgRun5;
+    else if (frame === 5) img = imgRun6;
+    else if (frame === 6) img = imgRun7;
+    else img = imgRun8;
+  }
+
+  const w = 80;
+  const h = 50;
+
+  const px = onca.x - w / 2;
+  const py = onca.y - h;
+
+  ctx.drawImage(img, px, py, w, h);
+
+  // hitbox
+  onca.w = w * 0.7;
+  onca.h = h;
+}
+
+    /* ── ÁRVORE PIXEL ART (inspirada na referência: copa redonda, tronco largo) ── */
+    /* Copa: 14×10, Tronco: 4×5 — escala variável */
+    const TREE_CANOPY = [
+      [_,_,_,BK,'#1a5c35','#22c55e','#16a34a','#22c55e','#1a5c35',BK,_,_,_,_],
+      [_,_,BK,'#22c55e','#4ade80','#86efac','#4ade80','#86efac','#22c55e','#16a34a',BK,_,_,_],
+      [_,BK,'#16a34a','#4ade80','#86efac','#bbf7d0','#86efac','#4ade80','#86efac','#22c55e','#16a34a',BK,_,_],
+      [BK,'#22c55e','#4ade80','#86efac','#bbf7d0','#86efac','#bbf7d0','#86efac','#4ade80','#22c55e','#4ade80','#16a34a',BK,_],
+      [BK,'#16a34a','#86efac','#bbf7d0','#86efac','#4ade80','#86efac','#bbf7d0','#86efac','#4ade80','#22c55e','#16a34a',BK,_],
+      [_,BK,'#22c55e','#4ade80','#86efac','#4ade80','#22c55e','#4ade80','#86efac','#22c55e','#16a34a',BK,_,_],
+      [_,_,BK,'#16a34a','#22c55e','#4ade80','#22c55e','#4ade80','#22c55e','#16a34a',BK,_,_,_],
+      [_,_,_,BK,'#16a34a','#22c55e','#16a34a','#22c55e','#16a34a',BK,_,_,_,_],
+      [_,_,_,_,BK,'#166534','#16a34a','#166534',BK,_,_,_,_,_],
+      [_,_,_,_,_,BK,BK,BK,_,_,_,_,_,_],
+    ];
+    const TREE_TRUNK = [
+      [_,'#92400e','#a16207','#92400e',_],
+      ['#78350f','#b45309','#d97706','#a16207','#78350f'],
+      ['#78350f','#a16207','#d97706','#b45309','#78350f'],
+      ['#92400e','#b45309','#a16207','#92400e','#78350f'],
+      ['#78350f','#92400e','#92400e','#78350f','#78350f'],
+    ];
+
+    /* Árvores de fundo (menores, mais escuras) */
+    const TREE_CANOPY_BG = [
+      [_,_,BK,'#0a3320','#0d4428','#0a3320',BK,_,_],
+      [_,BK,'#0d4428','#155e38','#1a7a48','#155e38','#0d4428',BK,_],
+      [BK,'#0a3320','#155e38','#1a7a48','#155e38','#1a7a48','#155e38','#0a3320',BK],
+      [BK,'#0d4428','#1a7a48','#155e38','#0d4428','#155e38','#1a7a48','#0d4428',BK],
+      [_,BK,'#0a3320','#0d4428','#155e38','#0d4428','#0a3320',BK,_],
+      [_,_,BK,'#0a3320','#0d4428','#0a3320',BK,_,_],
+      [_,_,_,BK,BK,BK,_,_,_],
+    ];
+    const TRUNK_BG = [
+      [_,'#3d1f0d','#3d1f0d',_],
+      ['#2d1508','#3d1f0d','#3d1f0d','#2d1508'],
+      ['#2d1508','#3d1f0d','#2d1508','#2d1508'],
+    ];
+
+    /* Pré-renderiza árvores de fundo em offscreen canvas */
+    function makeTreeCanvas(canopy, trunk, ps) {
+      const cw = canopy[0].length * ps;
+      const ch = (canopy.length + trunk.length) * ps;
+      const oc = document.createElement('canvas');
+      oc.width = cw; oc.height = ch;
+      const octx = oc.getContext('2d');
+      canopy.forEach((row, ry) => row.forEach((col, rx) => {
+        if (!col) return;
+        octx.fillStyle = col;
+        octx.fillRect(rx * ps, ry * ps, ps, ps);
+      }));
+      const trunkOffX = Math.floor((canopy[0].length - trunk[0].length) / 2);
+      trunk.forEach((row, ry) => row.forEach((col, rx) => {
+        if (!col) return;
+        octx.fillStyle = col;
+        octx.fillRect((trunkOffX + rx) * ps, (canopy.length + ry) * ps, ps, ps);
+      }));
+      return oc;
+    }
+
+    const treeFgCanvas = makeTreeCanvas(TREE_CANOPY, TREE_TRUNK, P);
+    const treeBgCanvas = makeTreeCanvas(TREE_CANOPY_BG, TRUNK_BG, 3);
+
+    /* Posições fixas das árvores de fundo */
+    const BG_TREES = [
+      {x:55, scale:0.9},{x:185, scale:0.7},{x:330, scale:1.0},
+      {x:475, scale:0.75},{x:615, scale:0.85},
+    ];
 
     const OBS_TYPES=[
-      {w:28,h:44,c:'#5d3a1a',label:'🌲',type:'tall'},
-      {w:48,h:22,c:'#8b4513',label:'🪵',type:'low'},
-      {w:36,h:36,c:'#e53935',label:'🔥',type:'fire'},
+      {w:treeFgCanvas.width*0.7,h:treeFgCanvas.height*0.7,type:'tree'},
+      {w:treeFgCanvas.width*0.85,h:treeFgCanvas.height*0.85,type:'tree'},
+      {type:'fire', scale:0.6},
       {w:52,h:28,c:'#607d8b',label:'🚜',type:'machine'},
     ];
 
-    function jump(){if(running&&onca.onGround){onca.vy=JUMP_V;onca.onGround=false;}}
+
+    function jump(){
+  if(running && onca.onGround){
+    onca.vy = JUMP_V;
+    onca.onGround = false;
+    jumpTime = 0; // 👈 importante
+  }
+}
     function duck(on){if(running)onca.ducking=on;}
 
     const keyH=e=>{
@@ -242,49 +457,143 @@
     document.addEventListener('keyup',keyU);
     canvas.onclick=()=>jump();
 
-    function spawnObs(){
-      const t=OBS_TYPES[~~(Math.random()*OBS_TYPES.length)];
-      const isLow=t.type==='low'||t.type==='machine';
-      obstacles.push({x:W+20,y:isLow?GROUND-t.h/2:GROUND-t.h,...t,oy:isLow?GROUND-t.h/2:GROUND-t.h});
-      if(Math.random()<0.25)powerups.push({x:W+60+Math.random()*80,y:GROUND-70,emoji:'🍃',alive:true});
-    }
+  function drawFire(ob) {
+  let img;
 
-    function drawOnca(){
-      const oh=onca.ducking?22:onca.h;
-      const oy=GROUND-oh;
-      ctx.font=`${onca.ducking?28:36}px serif`;
-      ctx.textAlign='center'; ctx.textBaseline='bottom';
-      ctx.fillText('🐆',onca.x,oy+oh);
+  const frame = Math.floor(tick / 6) % 6;
+
+  if (frame === 0) img = fireImg1;
+  else if (frame === 1) img = fireImg2;
+  else if (frame === 2) img = fireImg3;
+  else if (frame === 3) img = fireImg4;
+  else if (frame === 4) img = fireImg5;
+  else img = fireImg6;
+
+  const scale = ob.scale || 1;
+
+  // 🔥 usa proporção real da imagem
+  const w = img.width * scale;
+  const h = img.height * scale;
+
+  const yOffset = 15;
+
+  const y = ob.oy - h; 
+
+ctx.drawImage(img, ob.x, y, w, h);
+}
+
+function drawObstacle(ob) {
+  if (ob.type === 'tree') {
+    const scale = ob.treeScale || 1;
+    const dw = treeFgCanvas.width * scale;
+    const dh = treeFgCanvas.height * scale;
+    ctx.drawImage(treeFgCanvas, ob.x, GROUND - dh, dw, dh);
+
+  } else if (ob.type === 'fire') {
+    drawFire(ob);
+
+  } else {
+    ctx.font = `${ob.w}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(ob.label, ob.x + ob.w / 2, ob.oy + ob.h);
+  }
+}
+
+    function spawnObs(){
+      const t = OBS_TYPES[~~(Math.random() * OBS_TYPES.length)];
+      if (t.type === 'tree') {
+        const sc = 0.7 + Math.random() * 0.5;
+        const dw = treeFgCanvas.width * sc;
+        const dh = treeFgCanvas.height * sc;
+        obstacles.push({x:W+20, oy:GROUND-dh, w:dw*0.55, h:dh*0.8, type:'tree', treeScale:sc});
+
+      }
+      else if (t.type === 'fire') {
+
+  const scale = t.scale || 1;
+
+  const baseSize = 60; // 👈 CONTROLE REAL DO TAMANHO
+
+  const w = baseSize * scale;
+  const h = baseSize * scale;
+
+obstacles.push({
+  x: W + 20,
+  oy: GROUND,   // base do chão (referência)
+  type: 'fire',
+  scale: scale
+});
+
+} else {
+  const isLow = t.type==='low'||t.type==='machine';
+  obstacles.push({
+    x:W+20,
+    y:isLow?GROUND-t.h/2:GROUND-t.h,
+    ...t,
+    oy:isLow?GROUND-t.h/2:GROUND-t.h
+  });
+}
+
+
+
+      if(Math.random()<0.25)powerups.push({x:W+60+Math.random()*80,y:GROUND-70,emoji:'🍃',alive:true});
     }
 
     function loop(){
       if(!running)return;
+      tick++;
       dist+=speed; score=~~(dist/6);
       speed=3.2+level*0.4; if(dist>level*1200)level++;
       updateHUD(score,level,lives);
       clrCanvas();
+      
 
-      /* céu com paralaxe */
+      /* céu */
       const sky=ctx.createLinearGradient(0,0,0,GH);
       sky.addColorStop(0,'#04100a'); sky.addColorStop(1,'#0d2e16');
       ctx.fillStyle=sky; ctx.fillRect(0,0,W,GH);
 
-      /* árvores paralaxe fundo */
-      bgX-=speed*0.3;
-      if(bgX<-W)bgX=0;
-      [0,W].forEach(ox=>{
-        [{x:60,h:80,w:30,c:'#0a2a14'},{x:180,h:55,w:22,c:'#0d3218'},{x:340,h:90,w:36,c:'#091f10'},
-         {x:480,h:65,w:26,c:'#0c2e16'},{x:620,h:75,w:30,c:'#0a2a14'}].forEach(t=>{
-          const tx=t.x+ox+bgX;
-          ctx.fillStyle='#1e0f08'; ctx.fillRect(tx-3,GROUND-t.h,6,t.h);
-          ctx.fillStyle=t.c; ctx.beginPath(); ctx.moveTo(tx,GROUND-t.h-20);
-          ctx.lineTo(tx-t.w/2,GROUND-t.h+10); ctx.lineTo(tx+t.w/2,GROUND-t.h+10); ctx.closePath(); ctx.fill();
+      /* árvores pixel art de fundo (paralaxe) */
+      bgX -= speed * 0.3;
+      if(bgX < -W) bgX = 0;
+      [0, W].forEach(ox => {
+        BG_TREES.forEach(t => {
+          const tx = t.x + ox + bgX;
+          const sc = t.scale;
+          const dw = treeBgCanvas.width * sc;
+          const dh = treeBgCanvas.height * sc;
+          ctx.drawImage(treeBgCanvas, tx - dw/2, GROUND - dh, dw, dh);
         });
       });
 
-      /* chão */
-      ctx.fillStyle='#0d2e16'; ctx.fillRect(0,GROUND,W,GH-GROUND);
-      ctx.fillStyle='rgba(34,197,94,0.12)'; ctx.fillRect(0,GROUND,W,3);
+/* 🆕 CHÃO COM IMAGEM AJUSTADO */
+const groundHeight = 320;
+
+// ajuste fino (esse é o segredo)
+const groundOffset = 258;
+
+groundX -= speed;
+
+if (groundX <= -groundImg.width) {
+  groundX += groundImg.width;
+}
+
+ctx.drawImage(
+  groundImg,
+  groundX,
+  GROUND - groundOffset,
+  groundImg.width,
+  groundHeight
+);
+
+ctx.drawImage(
+  groundImg,
+  groundX + groundImg.width,
+  GROUND - groundOffset,
+  groundImg.width,
+  groundHeight
+);
 
       /* powerups */
       powerups.forEach(p=>{
@@ -296,24 +605,41 @@
       });
 
       /* obstacles */
+      let hit = false;
       obstacles.forEach(ob=>{
-        ctx.font=`${ob.w}px serif`; ctx.textAlign='center'; ctx.textBaseline='bottom';
-        ctx.fillText(ob.label,ob.x+ob.w/2,ob.oy+ob.h); ob.x-=speed;
+        drawObstacle(ob);
+        ob.x -= speed;
         /* colisão */
-        const oh=onca.ducking?22:onca.h;
-        const ox2=onca.x+onca.w*.4,oy2=GROUND-oh;
-        if(ob.x<ox2&&ob.x+ob.w>onca.x-onca.w*.3&&ob.oy<oy2+oh&&ob.oy+ob.h>oy2){
-          ob.x=-100; lives--; shakePanel(); updateHUD(score,level,lives);
+        const oh = onca.ducking ? 14 : onca.h;
+        const ox1 = onca.x - onca.w * 0.3;
+        const ox2 = onca.x + onca.w * 0.3;
+        const oy2 = onca.y - oh;
+        const obRight = ob.x + (ob.w || treeFgCanvas.width * 0.55);
+        if(!hit && obRight > ox1 && ob.x < ox2 && ob.oy < oy2+oh && ob.oy+ob.h > oy2){
+          ob.x = -200; hit = true;
+          lives--; shakePanel(); updateHUD(score,level,lives);
           if(lives<=0){end(false);return;}
         }
       });
-      obstacles=obstacles.filter(o=>o.x>-80);
-      powerups=powerups.filter(p=>p.alive&&p.x>-30);
+      obstacles = obstacles.filter(o=>o.x>-200);
+      powerups  = powerups.filter(p=>p.alive&&p.x>-30);
 
-      /* onça física */
-      if(!onca.onGround){onca.vy+=GRAVITY;onca.y+=onca.vy;}
-      if(onca.y>=GROUND){onca.y=GROUND;onca.vy=0;onca.onGround=true;}
-      drawOnca();
+/* onça física */
+if(!onca.onGround){
+  onca.vy += GRAVITY;
+  onca.y += onca.vy;
+
+  jumpTime++;
+}
+
+/* colisão com o chão (sempre checa) */
+if(onca.y >= GROUND){
+  onca.y = GROUND;
+  onca.vy = 0;
+  onca.onGround = true;
+  jumpTime = 0;
+}
+drawOnca();
 
       /* spawn obs */
       obsTick++; if(obsTick>=obsInterval){obsTick=0;obsInterval=Math.max(55,110-level*8);spawnObs();}
@@ -332,7 +658,7 @@
         'Correr de novo');
     }
     function start(){score=0;lives=3;level=1;dist=0;speed=3.2;tick=0;obsTick=0;obsInterval=110;
-      obstacles=[];powerups=[];onca={x:90,y:GROUND,vy:0,onGround:true,ducking:false,w:44,h:40};
+      obstacles=[];powerups=[];onca={x:90,y:GROUND,vy:0,onGround:true,ducking:false,w:48,h:32};
       running=true;hideScreen();updateHUD(0,1,3);loop();}
     startBtn.onclick=start;
     activeGame={cleanup:()=>{running=false;document.removeEventListener('keydown',keyH);document.removeEventListener('keyup',keyU);canvas.onclick=null;}};
@@ -461,134 +787,7 @@
   }
 
   /* ════════════════════════════════════
-     JOGO 4 — IDENTIFICAR ESPÉCIES
-  ════════════════════════════════════ */
-  function initEspecies() {
-    titleEl.textContent = '🦜 Identificar Espécies';
-    tipEl.textContent   = 'Identifique o animal antes do tempo acabar · Erre 3 = fim de jogo';
-    updateHUD(0,1,3,true,true);
-
-    const ESPECIES = [
-      {emoji:'🦜',nome:'Arara-azul',erradas:['Tucano-toco','Papagaio-verdadeiro']},
-      {emoji:'🐆',nome:'Onça-pintada',erradas:['Leopardo','Jaguar-negro']},
-      {emoji:'🦋',nome:'Morpho-azul',erradas:['Borboleta-monarca','Urania leilus']},
-      {emoji:'🐊',nome:'Jacaré-açu',erradas:['Caimão-de-óculos','Crocodilo-do-Nilo']},
-      {emoji:'🦥',nome:'Preguiça-de-coleira',erradas:['Preguiça-de-três-dedos','Tamanduá-mirim']},
-      {emoji:'🐬',nome:'Boto-cor-de-rosa',erradas:['Toninha','Golfinho-nariz-de-garrafa']},
-      {emoji:'🦎',nome:'Teiú',erradas:['Calango-verde','Iguana-comum']},
-      {emoji:'🐸',nome:'Perereca-verde',erradas:['Rã-touro','Sapo-cururu']},
-      {emoji:'🦚',nome:'Pavão-do-congo',erradas:['Mutum-de-penacho','Emu']},
-      {emoji:'🐻',nome:'Tamanduá-bandeira',erradas:['Quati','Lobo-guará']},
-      {emoji:'🦩',nome:'Tuiuiú',erradas:['Garça-branca','Flamingo-chileno']},
-      {emoji:'🐍',nome:'Sucuri-verde',erradas:['Jiboia-constritora','Anaconda-amarela']},
-    ];
-
-    let score=0,lives=3,level=1,running=false,current=null,timer=0,maxTime=220,answered=false;
-    let queue=[...ESPECIES].sort(()=>Math.random()-.5);
-    let correct=0;
-
-    /* botões de opção */
-    let opcoesEl = document.getElementById('especies-opcoes');
-    if(!opcoesEl){
-      opcoesEl = document.createElement('div');
-      opcoesEl.id='especies-opcoes';
-      opcoesEl.className='especies-opcoes';
-      panelEl.querySelector('.game-tip').before(opcoesEl);
-    }
-    opcoesEl.style.display='none';
-
-    function shuffle(a){return a.sort(()=>Math.random()-.5);}
-
-    function nextQuestion(){
-      if(queue.length===0){queue=[...ESPECIES].sort(()=>Math.random()-.5);level++;}
-      current=queue.pop(); answered=false; timer=0;
-      maxTime=Math.max(100,220-level*15);
-      const opts=shuffle([current.nome,...current.erradas]);
-      opcoesEl.innerHTML=opts.map(o=>`<button class="especie-btn" data-nome="${o}">${o}</button>`).join('');
-      opcoesEl.querySelectorAll('.especie-btn').forEach(b=>{
-        b.addEventListener('click',()=>answer(b.dataset.nome,b));
-      });
-    }
-
-    function answer(nome,btn){
-      if(answered)return; answered=true;
-      if(nome===current.nome){
-        score+=10+(level*3); correct++; btn.classList.add('correct');
-        popup(W/2,H/2,'#22c55e',`+${10+level*3} ✓`);
-      } else {
-        lives--; btn.classList.add('wrong');
-        opcoesEl.querySelectorAll('.especie-btn').forEach(b=>{ if(b.dataset.nome===current.nome) b.classList.add('correct'); });
-        popup(W/2,H/2,'#f87171','✗ Errou');
-        shakePanel();
-      }
-      updateHUD(score,level,lives);
-      if(lives<=0){setTimeout(()=>end(false),900);return;}
-      setTimeout(nextQuestion,1000);
-    }
-
-    function drawTimer(t,max){
-      const pct=1-(t/max);
-      ctx.fillStyle='rgba(0,0,0,0.3)';
-      ctx.fillRect(0,0,W,6);
-      ctx.fillStyle=pct<0.3?'#ef4444':pct<0.6?'#f59e0b':'#22c55e';
-      ctx.fillRect(0,0,W*(1-(t/max)),6);
-    }
-
-    function loop(){
-      if(!running)return;
-      clrCanvas();
-      const sky=ctx.createLinearGradient(0,0,0,H);
-      sky.addColorStop(0,'#04100a'); sky.addColorStop(1,'#081e10');
-      ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
-      /* luz de palco */
-      const spot=ctx.createRadialGradient(W/2,H*.3,0,W/2,H*.3,200);
-      spot.addColorStop(0,'rgba(34,197,94,0.08)'); spot.addColorStop(1,'transparent');
-      ctx.fillStyle=spot; ctx.fillRect(0,0,W,H);
-      /* emoji enorme */
-      if(current){
-        ctx.font='120px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillText(current.emoji,W/2,H/2-10);
-        /* flash ao responder */
-        if(answered){
-          ctx.fillStyle='rgba(34,197,94,0.1)'; ctx.fillRect(0,0,W,H);
-        }
-      }
-      /* timer */
-      if(!answered&&current){
-        timer++;
-        drawTimer(timer,maxTime);
-        if(timer>=maxTime){
-          lives--; answered=true; shakePanel();
-          opcoesEl.querySelectorAll('.especie-btn').forEach(b=>{ if(b.dataset.nome===current.nome) b.classList.add('correct'); });
-          popup(W/2,60,'#f87171','⏱ Tempo!');
-          updateHUD(score,level,lives);
-          if(lives<=0){setTimeout(()=>end(false),900);}
-          else setTimeout(nextQuestion,1000);
-        }
-      }
-      raf=requestAnimationFrame(loop);
-    }
-
-    function end(won){
-      running=false;cancelAnimationFrame(raf);
-      opcoesEl.style.display='none';
-      showScreen('🦜 Fim do Quiz!',
-        `Espécies identificadas: <strong>${correct}</strong><br>Pontuação: <strong>${score}</strong><br>Você conhece a fauna brasileira!`,
-        'Jogar de novo');
-    }
-    function start(){
-      score=0;lives=3;level=1;timer=0;correct=0;
-      queue=[...ESPECIES].sort(()=>Math.random()-.5);
-      running=true;hideScreen();opcoesEl.style.display='grid';
-      updateHUD(0,1,3);nextQuestion();loop();
-    }
-    startBtn.onclick=start;
-    activeGame={cleanup:()=>{running=false;opcoesEl.style.display='none';canvas.onclick=null;}};
-    showScreen('Identificar Espécies','Reconheça os <strong>animais da fauna brasileira</strong>.<br>Clique no nome correto antes do tempo acabar!');
-  }
-
-  /* ════════════════════════════════════
-     JOGO 5 — DEFENDER O RIO
+     JOGO 4 — DEFENDER O RIO
   ════════════════════════════════════ */
   function initRio() {
     titleEl.textContent = '🌊 Defender o Rio';

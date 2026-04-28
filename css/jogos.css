@@ -4,38 +4,52 @@
    ============================================= */
 
 /* === BOTÃO HERO === */
+
 .cta-game {
+  padding: 0.9rem 2.67rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-xl);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--texto-claro);
+    transition: all 0.3s var(--ease-smooth);
+  background: transparent;
+}
+
+.cta-game:hover {
+  border-color: var(--amarelo-brilho);
+  color: var(--amarelo-brilho);
+  background: rgba(165, 99, 0, 0.05);
+
+}
+
+
+.cta-species {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.9rem 1.8rem;
-  background: transparent;
+  padding: 0.9rem 2.93rem;
+  background: var(--amber);
   border: 1px solid var(--amber);
   border-radius: var(--radius-xl);
   font-family: var(--font-mono);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: var(--amber);
+  color: var(--preto-floresta);
   cursor: pointer;
   transition: all 0.3s var(--ease-spring);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 0 24px rgba(34,197,94,0.16);
 }
-.cta-game::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--amber);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s var(--ease-smooth);
-  z-index: 0;
+.cta-species:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 50px var(--amarelo-brilho), 0 8px 25px rgba(0,0,0,0.4);
+  background: var(--amarelo-brilho);
 }
-.cta-game:hover { color: var(--preto-floresta); box-shadow: 0 0 30px rgba(245,158,11,0.45); }
-.cta-game:hover::before { transform: scaleX(1); }
-.cta-game > * { position: relative; z-index: 1; }
-
 /* === OVERLAY GERAL === */
 .game-overlay {
   position: fixed;

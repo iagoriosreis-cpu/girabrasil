@@ -15,12 +15,13 @@
   --verde-brilho:     #4ade80;
   --verde-glow:       rgba(34, 197, 94, 0.15);
 
-  /* Tons de terra */
+/* Tons de terra */
   --terra-quente:     #8b4513;
   --terra-clara:      #c8824a;
   --amber:            #f59e0b;
   --ouro:             #d97706;
-
+  --amarelo-brilho:   #ffab19;
+  
   /* Neutros escuros */
   --preto-floresta:   #040d07;
   --cinza-escuro:     #0e1a12;
@@ -316,6 +317,7 @@ body {
 
 .logo-img:hover {
   filter: drop-shadow(0 0 12px rgba(34,197,94,1));
+  cursor: pointer;
 }
 
 
@@ -352,6 +354,7 @@ body {
   transition: color 0.2s ease;
   position: relative;
   padding-bottom: 2px;
+  cursor: pointer;
 }
 
 .nav-link::after {
@@ -363,6 +366,7 @@ body {
   height: 1px;
   background: var(--verde-vivo);
   transition: width 0.3s var(--ease-smooth);
+  cursor: pointer;
 }
 
 .nav-link:hover,
