@@ -97,7 +97,7 @@ const server = http.createServer((req, res) => {
 
       // Monta o payload para a Groq
       const payload = JSON.stringify({
-        model: 'llama3-70b-8192',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...mensagens
