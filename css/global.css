@@ -513,3 +513,69 @@ body {
     justify-content: flex-start;
   }
 }
+
+/* =============================================
+   MELHORIAS MOBILE — GLOBAL
+   ============================================= */
+
+@media (max-width: 768px) {
+
+  /* Header mais compacto */
+  .site-header {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .logo-img {
+    height: 50px;
+  }
+
+  /* Nav mobile — mostra só o botão Regiões e Gira-Bot */
+  .main-nav {
+    gap: 0.6rem;
+  }
+
+  .main-nav .nav-link {
+    display: none;
+  }
+
+  /* Botão Regiões menor no mobile */
+  .btn-regioes {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Botão Gira-Bot visível no mobile */
+  .btn-girabot {
+    display: flex !important;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Rodapé mobile */
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-links {
+    justify-content: flex-start;
+    gap: 2rem;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .btn-regioes {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.62rem;
+  }
+  .btn-girabot {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.62rem;
+  }
+}

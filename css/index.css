@@ -595,3 +595,126 @@
   .stat-num { font-size: 1.3rem; }
   .hero-title { font-size: 3rem; }
 }
+
+/* =============================================
+   RESPONSIVIDADE MOBILE — INDEX
+   ============================================= */
+
+@media (max-width: 768px) {
+
+  /* === HERO === */
+  .hero {
+    padding: 6rem 1.25rem 3rem;
+    min-height: 100svh;
+  }
+
+  /* Esconde a logo gigante no mobile */
+  .hero-image {
+    display: none !important;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 12vw, 4.5rem);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    max-width: 100%;
+  }
+
+  /* Botões do hero em coluna */
+  .hero-cta {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .cta-primary,
+  .cta-secondary,
+  .cta-species,
+  .cta-game {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+  }
+
+  /* Stats menores */
+  .hero-stats {
+    gap: 1.25rem;
+    padding-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-num { font-size: 1.3rem; }
+  .stat-label { font-size: 0.7rem; }
+  .stat-divider { height: 30px; }
+
+  /* Scroll hint some no mobile */
+  .scroll-hint { display: none; }
+
+  /* === NOTÍCIAS === */
+  .noticias-section {
+    padding: 3rem 1.25rem;
+  }
+
+  .noticias-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card-featured { grid-row: auto; }
+  .card-featured .card-img-wrap { height: 220px; }
+  .card-secondary .card-img-wrap { height: 160px; }
+
+  .card-featured .card-title { font-size: 1.3rem; }
+  .card-title { font-size: 1.1rem; }
+  .card-excerpt { font-size: 0.88rem; }
+  .card-body { padding: 1.1rem; }
+
+  /* Botão ver todas */
+  .btn-all-news {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.72rem;
+  }
+
+  /* === BANNER REGIÕES === */
+  .regioes-banner {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.25rem;
+    gap: 1.5rem;
+    border-radius: var(--radius-lg);
+    margin: 0 1.25rem;
+  }
+
+  .banner-map-preview { order: -1; }
+
+  .map-glow { width: 220px; height: 220px; }
+  .brasil-silhouette { width: 200px; }
+
+  .banner-content h2 { font-size: 1.8rem; }
+  .banner-content p { font-size: 0.95rem; }
+
+  .btn-mapa {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+  }
+
+  /* === SEÇÃO HEADER === */
+  .section-title { font-size: 1.9rem; }
+  .section-sub { font-size: 0.92rem; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 2.6rem; }
+  .hero-stats { gap: 1rem; }
+  .stat-divider { display: none; }
+  .stat-num { font-size: 1.2rem; }
+}
