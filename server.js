@@ -1,7 +1,6 @@
 // =============================================
 // GIRABRASIL — SERVER.JS
-// Servidor backend para o Gira-Bot
-// Fica entre o site e a API da Groq
+// Servidor backend com streaming para o Gira-Bot
 // =============================================
 
 const http = require('http');
@@ -12,7 +11,6 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-// Tipos MIME para servir arquivos estáticos
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css':  'text/css; charset=utf-8',
@@ -26,7 +24,6 @@ const MIME_TYPES = {
   '.json': 'application/json',
 };
 
-// Prompt do sistema do Gira-Bot
 const SYSTEM_PROMPT = `Você é o Gira-Bot, a inteligência artificial oficial do site GiraBrasil — um portal de notícias e informações sobre a natureza e as florestas do Brasil.
 
 Sua personalidade:
@@ -62,12 +59,10 @@ Formato das respostas:
 
 const server = http.createServer((req, res) => {
 
-  // Headers CORS — permite o site chamar o servidor
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Preflight CORS
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
@@ -75,16 +70,14 @@ const server = http.createServer((req, res) => {
   }
 
   // =============================================
-  // ROTA DA API DO GIRA-BOT: POST /api/chat
+  // ROTA DE STREAMING: POST /api/chat
   // =============================================
   if (req.method === 'POST' && req.url === '/api/chat') {
     let body = '';
-
     req.on('data', chunk => { body += chunk.toString(); });
 
     req.on('end', () => {
       let mensagens;
-
       try {
         const parsed = JSON.parse(body);
         mensagens = parsed.messages;
@@ -95,7 +88,7 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      // Monta o payload para a Groq
+      // Payload com stream: true
       const payload = JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
@@ -104,9 +97,16 @@ const server = http.createServer((req, res) => {
         ],
         max_tokens: 1024,
         temperature: 0.7,
+        stream: true  // ← habilita o streaming
       });
 
-      // Chama a API da Groq
+      // Headers SSE — mantém a conexão aberta e envia dados em tempo real
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      });
+
       const options = {
         hostname: 'api.groq.com',
         path: '/openai/v1/chat/completions',
@@ -119,32 +119,46 @@ const server = http.createServer((req, res) => {
       };
 
       const groqReq = https.request(options, (groqRes) => {
-        let data = '';
-        groqRes.on('data', chunk => { data += chunk; });
-        groqRes.on('end', () => {
-          try {
-            console.log('Groq status:', groqRes.statusCode);
-            console.log('Groq resposta raw:', data);
-            const json = JSON.parse(data);
-            const resposta = json.choices?.[0]?.message?.content;
+        let buffer = '';
 
-            if (resposta) {
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ resposta }));
-            } else {
-              throw new Error('Sem resposta');
+        groqRes.on('data', chunk => {
+          buffer += chunk.toString();
+
+          // Processa linha por linha (formato SSE da Groq)
+          const linhas = buffer.split('\n');
+          buffer = linhas.pop(); // guarda linha incompleta para próxima iteração
+
+          for (const linha of linhas) {
+            const trimmed = linha.trim();
+            if (!trimmed || trimmed === 'data: [DONE]') continue;
+
+            if (trimmed.startsWith('data: ')) {
+              try {
+                const json = JSON.parse(trimmed.slice(6));
+                const token = json.choices?.[0]?.delta?.content;
+
+                if (token) {
+                  // Envia cada pedaço de texto para o frontend
+                  res.write(`data: ${JSON.stringify({ token })}\n\n`);
+                }
+              } catch (e) {
+                // ignora linhas malformadas
+              }
             }
-          } catch (e) {
-            res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Erro ao processar resposta' }));
           }
+        });
+
+        groqRes.on('end', () => {
+          // Sinaliza que terminou
+          res.write('data: [DONE]\n\n');
+          res.end();
         });
       });
 
       groqReq.on('error', (e) => {
-        console.error('Erro na requisição Groq:', e.message);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Erro de conexão com a IA' }));
+        console.error('Erro Groq:', e.message);
+        res.write(`data: ${JSON.stringify({ error: 'Erro de conexão' })}\n\n`);
+        res.end();
       });
 
       groqReq.write(payload);
@@ -155,16 +169,15 @@ const server = http.createServer((req, res) => {
   }
 
   // =============================================
-  // ARQUIVOS ESTÁTICOS (site)
+  // ARQUIVOS ESTÁTICOS
   // =============================================
-  let urlPath = req.url.split('?')[0]; // remove query string
+  let urlPath = req.url.split('?')[0];
   if (urlPath === '/') urlPath = '/index.html';
 
   const filePath = path.join(__dirname, urlPath);
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // Tenta servir index.html para rotas não encontradas
       fs.readFile(path.join(__dirname, 'index.html'), (err2, data2) => {
         if (err2) {
           res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -179,7 +192,6 @@ const server = http.createServer((req, res) => {
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(data);
   });
