@@ -309,7 +309,7 @@ body {
 }
 
 .logo-img {
-  height: 55px;
+  height: 44px;
   width: auto;
   filter: drop-shadow(0 0 12px rgba(34,197,94,0.4));
   transition: filter 0.3s ease;
@@ -495,6 +495,13 @@ body {
   color: var(--texto-apagado);
 }
 
+
+/* === LOGO DESKTOP: completa com texto === */
+.logo-img {
+  content: url('assets/logo2completo.png');
+  height: 38px;
+}
+
 /* === RESPONSIVIDADE === */
 @media (max-width: 768px) {
   :root {
@@ -505,7 +512,12 @@ body {
   .main-nav .nav-link { display: none; }
   .main-nav .nav-link-girabot { display: flex; padding: 0.45rem 0.85rem; font-size: 0.68rem; }
 
-  .logo-img { height: 36px; }
+  /* Mobile: só o ícone */
+  .logo-img {
+    content: url('assets/logo2.png');
+    height: 32px;
+  }
+
 
   .btn-regioes { padding: 0.4rem 0.8rem; font-size: 0.65rem; }
 
