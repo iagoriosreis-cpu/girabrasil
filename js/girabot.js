@@ -1,11 +1,9 @@
 /* =============================================
    GIRABRASIL — GIRABOT.JS
-   Chat com IA — Streaming (texto aparece em tempo real)
+   Chat com IA — Efeito typewriter suave
    ============================================= */
 
 (function () {
-
-  const SYSTEM_PROMPT = ''; // prompt fica no server.js
 
   let mensagens = [];
   let aguardando = false;
@@ -50,6 +48,46 @@
   }
 
   // =============================================
+  // EFEITO TYPEWRITER
+  // Divide o texto em palavras e exibe uma a uma
+  // com velocidade controlada — igual ao Claude
+  // =============================================
+
+  function typewriter(bubble, textoCompleto, onFim) {
+    // Divide por palavras mantendo espaços
+    const palavras = textoCompleto.split(/(\s+)/);
+    let index = 0;
+    let acumulado = '';
+
+    // Velocidade em ms por palavra — quanto menor, mais rápido
+    const VELOCIDADE = 18;
+
+    function proxPalavra() {
+      if (index >= palavras.length) {
+        // Terminou — renderiza markdown completo e remove cursor
+        bubble.innerHTML = renderTexto(textoCompleto);
+        if (onFim) onFim();
+        return;
+      }
+
+      acumulado += palavras[index];
+      index++;
+
+      // Mostra texto acumulado em texto puro + cursor piscante
+      bubble.innerHTML = acumulado.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') +
+        '<span class="cursor-stream">▍</span>';
+
+      // Scroll suave
+      chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+
+      // Próxima palavra após delay
+      setTimeout(proxPalavra, VELOCIDADE);
+    }
+
+    proxPalavra();
+  }
+
+  // =============================================
   // RENDERIZAÇÃO
   // =============================================
 
@@ -89,7 +127,6 @@
   }
 
   function criarMsgBotVazia() {
-    // Cria o balão do bot já sem os pontinhos — vai receber o texto via streaming
     const msg = document.createElement('div');
     msg.className = 'msg msg-bot';
     msg.innerHTML = `
@@ -144,7 +181,7 @@
   }
 
   // =============================================
-  // ENVIO COM STREAMING
+  // ENVIO DE MENSAGEM — resposta completa + typewriter
   // =============================================
 
   async function enviarMensagem(texto) {
@@ -156,18 +193,15 @@
 
     esconderBoasVindas();
 
-    // Mensagem do usuário
     chatMessages.appendChild(criarMsgUsuario(texto));
     scrollParaFim();
 
     mensagens.push({ role: 'user', content: texto });
 
-    // Mostra pontinhos enquanto aguarda o primeiro token
+    // Mostra pontinhos enquanto aguarda a resposta
     const typing = criarMsgTyping();
     chatMessages.appendChild(typing);
     scrollParaFim();
-
-    let textoCompleto = '';
 
     try {
       const response = await fetch('/api/chat', {
@@ -176,75 +210,37 @@
         body: JSON.stringify({ messages: mensagens })
       });
 
-      if (!response.ok) throw new Error('Erro HTTP ' + response.status);
+      const data = await response.json();
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let msgBot = null;
-      let bubble = null;
+      typing.remove();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      if (data.resposta) {
+        const resposta = data.resposta;
+        mensagens.push({ role: 'assistant', content: resposta });
 
-        buffer += decoder.decode(value, { stream: true });
-        const linhas = buffer.split('\n');
-        buffer = linhas.pop();
+        // Cria o balão vazio
+        const msgBot = criarMsgBotVazia();
+        chatMessages.appendChild(msgBot);
+        const bubble = msgBot.querySelector('.msg-bubble-stream');
+        scrollParaFim();
 
-        for (const linha of linhas) {
-          const trimmed = linha.trim();
-          if (!trimmed) continue;
+        // Inicia o typewriter — quando terminar adiciona horário e libera input
+        typewriter(bubble, resposta, () => {
+          const timeEl = document.createElement('div');
+          timeEl.className = 'msg-time';
+          timeEl.textContent = getHoraAtual();
+          msgBot.querySelector('.msg-content').appendChild(timeEl);
 
-          if (trimmed === 'data: [DONE]') {
-            // Streaming terminou — finaliza a mensagem
-            if (bubble) {
-              // Remove o cursor piscante e renderiza o markdown completo
-              bubble.innerHTML = renderTexto(textoCompleto);
+          aguardando = false;
+          sendBtn.disabled = chatInput.value.trim() === '';
+          chatInput.disabled = false;
+          chatInput.focus();
+        });
 
-              // Adiciona o horário
-              const timeEl = document.createElement('div');
-              timeEl.className = 'msg-time';
-              timeEl.textContent = getHoraAtual();
-              msgBot.querySelector('.msg-content').appendChild(timeEl);
-            }
-            break;
-          }
+        return; // sai aqui — o finally é tratado no callback
 
-          if (trimmed.startsWith('data: ')) {
-            try {
-              const json = JSON.parse(trimmed.slice(6));
-
-              if (json.error) throw new Error(json.error);
-
-              if (json.token) {
-                // Primeiro token — remove os pontinhos e cria o balão de streaming
-                if (!msgBot) {
-                  typing.remove();
-                  msgBot = criarMsgBotVazia();
-                  chatMessages.appendChild(msgBot);
-                  bubble = msgBot.querySelector('.msg-bubble-stream');
-                }
-
-                textoCompleto += json.token;
-
-                // Atualiza o texto bruto com cursor piscante no final
-                bubble.textContent = textoCompleto;
-                bubble.innerHTML = textoCompleto.replace(/\n/g, '<br>') + '<span class="cursor-stream">▍</span>';
-                scrollParaFim();
-              }
-            } catch (e) {
-              // ignora linha malformada
-            }
-          }
-        }
-      }
-
-      // Salva a resposta completa no histórico
-      if (textoCompleto) {
-        mensagens.push({ role: 'assistant', content: textoCompleto });
       } else {
-        throw new Error('Resposta vazia');
+        throw new Error('Resposta inválida');
       }
 
     } catch (err) {
@@ -253,12 +249,12 @@
       chatMessages.appendChild(criarMsgErro());
       scrollParaFim();
       mensagens.pop();
-    }
 
-    aguardando = false;
-    sendBtn.disabled = chatInput.value.trim() === '';
-    chatInput.disabled = false;
-    chatInput.focus();
+      aguardando = false;
+      sendBtn.disabled = chatInput.value.trim() === '';
+      chatInput.disabled = false;
+      chatInput.focus();
+    }
   }
 
   // =============================================
