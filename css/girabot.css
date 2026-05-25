@@ -327,3 +327,33 @@
 .msg-bubble-stream {
   min-height: 24px;
 }
+
+/* === CURSOR DE STREAMING / TYPEWRITER === */
+.cursor-stream {
+  display: inline-block;
+  color: var(--verde-vivo);
+  font-weight: 300;
+  animation: cursor-blink 0.7s ease-in-out infinite;
+  margin-left: 1px;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.msg-bubble-stream {
+  min-height: 24px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Garante que os chips não sejam cortados */
+.welcome-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 500px;
+  padding-bottom: 0.5rem;
+}
