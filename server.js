@@ -1,6 +1,6 @@
 // =============================================
 // GIRABRASIL — SERVER.JS
-// Servidor backend com streaming para o Gira-Bot
+// Servidor backend para o Gira-Bot
 // =============================================
 
 const http = require('http');
@@ -44,7 +44,7 @@ Sua especialidade abrange EXCLUSIVAMENTE:
 - Bioeconomia, extrativismo sustentável e ecoturismo no Brasil
 - Notícias e temas recentes do meio ambiente brasileiro
 
-REGRA IMPORTANTE: Se o usuário perguntar sobre algo completamente fora desses temas, responda com gentileza que você é especializado apenas em natureza e meio ambiente brasileiro, e sugira um tema relacionado. Exemplo: "Esse tema está um pouco fora da minha floresta! 🌿 Sou especializado em natureza e meio ambiente do Brasil. Posso te falar sobre [sugestão relacionada]?"
+REGRA IMPORTANTE: Se o usuário perguntar sobre algo fora desses temas, responda com gentileza que você é especializado apenas em natureza e meio ambiente brasileiro, e sugira um tema relacionado.
 
 Formato das respostas:
 - Respostas em português brasileiro
@@ -52,10 +52,6 @@ Formato das respostas:
 - Use negrito (**texto**) para destacar nomes de espécies e conceitos importantes
 - Seja informativo mas não excessivamente longo
 - Sempre que possível, termine com um dado curioso ou convite para explorar mais o tema`;
-
-// =============================================
-// SERVIDOR HTTP
-// =============================================
 
 const server = http.createServer((req, res) => {
 
@@ -69,9 +65,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // =============================================
-  // ROTA DE STREAMING: POST /api/chat
-  // =============================================
+  // ROTA DA API: POST /api/chat
   if (req.method === 'POST' && req.url === '/api/chat') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -88,7 +82,6 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      // Payload com stream: true
       const payload = JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
@@ -97,14 +90,6 @@ const server = http.createServer((req, res) => {
         ],
         max_tokens: 1024,
         temperature: 0.7,
-        stream: true  // ← habilita o streaming
-      });
-
-      // Headers SSE — mantém a conexão aberta e envia dados em tempo real
-      res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
       });
 
       const options = {
@@ -119,58 +104,38 @@ const server = http.createServer((req, res) => {
       };
 
       const groqReq = https.request(options, (groqRes) => {
-        let buffer = '';
-
-        groqRes.on('data', chunk => {
-          buffer += chunk.toString();
-
-          // Processa linha por linha (formato SSE da Groq)
-          const linhas = buffer.split('\n');
-          buffer = linhas.pop(); // guarda linha incompleta para próxima iteração
-
-          for (const linha of linhas) {
-            const trimmed = linha.trim();
-            if (!trimmed || trimmed === 'data: [DONE]') continue;
-
-            if (trimmed.startsWith('data: ')) {
-              try {
-                const json = JSON.parse(trimmed.slice(6));
-                const token = json.choices?.[0]?.delta?.content;
-
-                if (token) {
-                  // Envia cada pedaço de texto para o frontend
-                  res.write(`data: ${JSON.stringify({ token })}\n\n`);
-                }
-              } catch (e) {
-                // ignora linhas malformadas
-              }
-            }
-          }
-        });
-
+        let data = '';
+        groqRes.on('data', chunk => { data += chunk; });
         groqRes.on('end', () => {
-          // Sinaliza que terminou
-          res.write('data: [DONE]\n\n');
-          res.end();
+          try {
+            const json = JSON.parse(data);
+            const resposta = json.choices?.[0]?.message?.content;
+            if (resposta) {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ resposta }));
+            } else {
+              throw new Error('Sem resposta');
+            }
+          } catch (e) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Erro ao processar resposta' }));
+          }
         });
       });
 
       groqReq.on('error', (e) => {
         console.error('Erro Groq:', e.message);
-        res.write(`data: ${JSON.stringify({ error: 'Erro de conexão' })}\n\n`);
-        res.end();
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro de conexão com a IA' }));
       });
 
       groqReq.write(payload);
       groqReq.end();
     });
-
     return;
   }
 
-  // =============================================
   // ARQUIVOS ESTÁTICOS
-  // =============================================
   let urlPath = req.url.split('?')[0];
   if (urlPath === '/') urlPath = '/index.html';
 
@@ -189,7 +154,6 @@ const server = http.createServer((req, res) => {
       });
       return;
     }
-
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
     res.writeHead(200, { 'Content-Type': contentType });
