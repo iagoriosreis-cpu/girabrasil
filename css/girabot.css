@@ -162,12 +162,9 @@
 
 .chat-welcome {
   flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: flex-start;
-  padding: 2rem 2rem 1.5rem;
-  text-align: center; gap: 1.1rem;
-  position: relative; animation: fadeIn 0.7s both;
-  overflow-y: auto; min-height: 0;
-  padding-top: max(2rem, calc(50% - 220px));
+  align-items: center; justify-content: center;
+  padding: 2rem; text-align: center; gap: 1.25rem;
+  position: relative; animation: fadeIn 0.7s both; overflow-y: auto;
 }
 
 .welcome-bot-glow {
@@ -190,7 +187,7 @@
 
 .welcome-title { font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.3rem); color: var(--texto-branco); line-height: 1.1; }
 .welcome-desc { color: var(--texto-claro); font-size: 1rem; line-height: 1.7; max-width: 440px; font-style: italic; }
-.welcome-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; max-width: 460px; flex-shrink: 0; padding-bottom: 0.5rem; }
+.welcome-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; max-width: 460px; }
 .welcome-chip { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; padding: 0.3rem 0.8rem; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.18); border-radius: var(--radius-xl); color: var(--verde-vivo); white-space: nowrap; }
 
 /* === Mensagens === */
