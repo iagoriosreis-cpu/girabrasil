@@ -308,18 +308,6 @@ body {
   align-items: center;
 }
 
-.logo-img {
-  height: 44px;
-  width: auto;
-  filter: drop-shadow(0 0 12px rgba(34,197,94,0.4));
-  transition: filter 0.3s ease;
-}
-
-.logo-img:hover {
-  filter: drop-shadow(0 0 12px rgba(34,197,94,1));
-  cursor: pointer;
-}
-
 
 .logo-text {
   font-family: var(--font-mono);
@@ -496,10 +484,26 @@ body {
 }
 
 
-/* === LOGO DESKTOP: completa com texto === */
-.logo-img {
-  content: url('assets/logo2completo.png');
+/* === LOGO: desktop mostra completa, mobile mostra só ícone === */
+.logo-img-desktop {
+  display: block;
   height: 38px;
+  width: auto;
+  filter: drop-shadow(0 0 12px rgba(34,197,94,0.4));
+  transition: filter 0.3s ease;
+}
+
+.logo-img-mobile {
+  display: none;
+  height: 32px;
+  width: auto;
+  filter: drop-shadow(0 0 12px rgba(34,197,94,0.4));
+  transition: filter 0.3s ease;
+}
+
+.logo-img-desktop:hover,
+.logo-img-mobile:hover {
+  filter: drop-shadow(0 0 12px rgba(34,197,94,1));
 }
 
 /* === RESPONSIVIDADE === */
@@ -512,12 +516,9 @@ body {
   .main-nav .nav-link { display: none; }
   .main-nav .nav-link-girabot { display: flex; padding: 0.45rem 0.85rem; font-size: 0.68rem; }
 
-  /* Mobile: só o ícone */
-  .logo-img {
-    content: url('assets/logo2.png');
-    height: 32px;
-  }
-
+  /* Mobile: esconde logo completa, mostra só ícone */
+  .logo-img-desktop { display: none; }
+  .logo-img-mobile  { display: block; }
 
   .btn-regioes { padding: 0.4rem 0.8rem; font-size: 0.65rem; }
 
