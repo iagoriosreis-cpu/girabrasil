@@ -1,15 +1,29 @@
 // =============================================
 // GIRABRASIL — SERVER.JS
-// Servidor backend para o Gira-Bot
+// Servidor backend para o Gira-Bot e banco de dados
 // =============================================
 
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const { Pool } = require('pg'); // driver do PostgreSQL
 
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
+
+// =============================================
+// CONEXÃO COM O BANCO DE DADOS
+// A DATABASE_URL vem automaticamente do Railway
+// =============================================
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+pool.connect()
+  .then(() => console.log('✅ Banco de dados conectado!'))
+  .catch(err => console.error('❌ Erro ao conectar no banco:', err));
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -53,7 +67,21 @@ Formato das respostas:
 - Seja informativo mas não excessivamente longo
 - Sempre que possível, termine com um dado curioso ou convite para explorar mais o tema`;
 
-const server = http.createServer((req, res) => {
+// =============================================
+// FUNÇÃO AUXILIAR — lê o body de uma requisição
+// =============================================
+function lerBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try { resolve(JSON.parse(body)); }
+      catch (e) { reject(e); }
+    });
+  });
+}
+
+const server = http.createServer(async (req, res) => {
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -65,7 +93,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ROTA DA API: POST /api/chat
+  // =============================================
+  // ROTA: POST /api/chat — Gira-Bot (sem alterações)
+  // =============================================
   if (req.method === 'POST' && req.url === '/api/chat') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -135,7 +165,165 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ARQUIVOS ESTÁTICOS
+  // =============================================
+  // ROTA: POST /api/usuarios — cadastra usuário
+  // =============================================
+  if (req.method === 'POST' && req.url === '/api/usuarios') {
+    try {
+      const { nome, email, senha_hash } = await lerBody(req);
+
+      if (!nome || !email || !senha_hash) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'nome, email e senha_hash são obrigatórios' }));
+        return;
+      }
+
+      const result = await pool.query(
+        'INSERT INTO usuarios (nome, email, senha_hash) VALUES ($1, $2, $3) RETURNING *',
+        [nome, email, senha_hash]
+      );
+
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result.rows[0]));
+    } catch (err) {
+      // erro de email duplicado
+      if (err.code === '23505') {
+        res.writeHead(409, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Email já cadastrado' }));
+      } else {
+        console.error('Erro ao cadastrar usuário:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro interno' }));
+      }
+    }
+    return;
+  }
+
+  // =============================================
+  // ROTA: GET /api/noticias — lista notícias
+  // ROTA: POST /api/noticias — cadastra notícia
+  // =============================================
+  if (req.url.startsWith('/api/noticias')) {
+
+    // Lista todas ou filtra por região: GET /api/noticias?regiao=norte
+    if (req.method === 'GET') {
+      try {
+        const regiao = new URL(req.url, 'http://localhost').searchParams.get('regiao');
+
+        let result;
+        if (regiao) {
+          result = await pool.query(
+            'SELECT * FROM noticias WHERE regiao = $1 ORDER BY criado_em DESC',
+            [regiao]
+          );
+        } else {
+          result = await pool.query('SELECT * FROM noticias ORDER BY criado_em DESC');
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result.rows));
+      } catch (err) {
+        console.error('Erro ao buscar notícias:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro interno' }));
+      }
+      return;
+    }
+
+    // Cadastra nova notícia
+    if (req.method === 'POST') {
+      try {
+        const { titulo, conteudo, regiao } = await lerBody(req);
+
+        if (!titulo || !conteudo || !regiao) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'titulo, conteudo e regiao são obrigatórios' }));
+          return;
+        }
+
+        const result = await pool.query(
+          'INSERT INTO noticias (titulo, conteudo, regiao) VALUES ($1, $2, $3) RETURNING *',
+          [titulo, conteudo, regiao]
+        );
+
+        res.writeHead(201, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result.rows[0]));
+      } catch (err) {
+        console.error('Erro ao cadastrar notícia:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro interno' }));
+      }
+      return;
+    }
+  }
+
+  // =============================================
+  // ROTA: GET /api/comentarios?noticia_id=1 — busca comentários
+  // ROTA: POST /api/comentarios — cadastra comentário
+  // =============================================
+  if (req.url.startsWith('/api/comentarios')) {
+
+    // Lista comentários de uma notícia
+    if (req.method === 'GET') {
+      try {
+        const noticia_id = new URL(req.url, 'http://localhost').searchParams.get('noticia_id');
+
+        if (!noticia_id) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'noticia_id é obrigatório' }));
+          return;
+        }
+
+        // busca comentários junto com o nome do usuário
+        const result = await pool.query(
+          `SELECT c.id, c.conteudo, c.criado_em, u.nome AS autor
+           FROM comentarios c
+           JOIN usuarios u ON c.usuario_id = u.id
+           WHERE c.noticia_id = $1
+           ORDER BY c.criado_em ASC`,
+          [noticia_id]
+        );
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result.rows));
+      } catch (err) {
+        console.error('Erro ao buscar comentários:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro interno' }));
+      }
+      return;
+    }
+
+    // Cadastra novo comentário
+    if (req.method === 'POST') {
+      try {
+        const { conteudo, usuario_id, noticia_id } = await lerBody(req);
+
+        if (!conteudo || !usuario_id || !noticia_id) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'conteudo, usuario_id e noticia_id são obrigatórios' }));
+          return;
+        }
+
+        const result = await pool.query(
+          'INSERT INTO comentarios (conteudo, usuario_id, noticia_id) VALUES ($1, $2, $3) RETURNING *',
+          [conteudo, usuario_id, noticia_id]
+        );
+
+        res.writeHead(201, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result.rows[0]));
+      } catch (err) {
+        console.error('Erro ao cadastrar comentário:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro interno' }));
+      }
+      return;
+    }
+  }
+
+  // =============================================
+  // ARQUIVOS ESTÁTICOS (sem alterações)
+  // =============================================
   let urlPath = req.url.split('?')[0];
   if (urlPath === '/') urlPath = '/index.html';
 
