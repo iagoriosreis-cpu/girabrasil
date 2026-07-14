@@ -71,7 +71,7 @@ document.getElementById('form-login').addEventListener('submit', async function(
     const dados = await resposta.json();
 
     if (!resposta.ok) {
-      msg.textContent = dados.erro;
+      msg.textContent = dados.error;
       msg.style.display = 'block';
       return;
     }
