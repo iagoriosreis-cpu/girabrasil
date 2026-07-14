@@ -95,21 +95,38 @@ const server = http.createServer(async (req, res) => {
   }
   const bcrypt = require('bcrypt');
 
-app.post('/api/login', async (req, res) => {
-  const { email, senha } = req.body;
-  try {
-    const resultado = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-    const usuario = resultado.rows[0];
-    if (!usuario) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+// =============================================
+  // ROTA: POST /api/login — autentica usuário
+  // =============================================
+  if (req.method === 'POST' && req.url === '/api/login') {
+    try {
+      const { email, senha } = await lerBody(req);
 
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
-    if (!senhaCorreta) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+      const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+      const usuario = result.rows[0];
 
-    res.json({ token: 'gb_' + usuario.id + '_' + Date.now(), nome: usuario.nome });
-  } catch (err) {
-    res.status(500).json({ erro: 'Erro no servidor. Tente novamente.' });
+      if (!usuario) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'E-mail ou senha incorretos.' }));
+        return;
+      }
+
+      const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
+      if (!senhaCorreta) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'E-mail ou senha incorretos.' }));
+        return;
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ token: 'gb_' + usuario.id + '_' + Date.now(), nome: usuario.nome }));
+    } catch (err) {
+      console.error('Erro no login:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Erro interno' }));
+    }
+    return;
   }
-});
 
   // =============================================
   // ROTA: POST /api/chat — Gira-Bot (sem alterações)
