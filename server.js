@@ -183,28 +183,29 @@ app.post('/api/login', async (req, res) => {
     return;
   }
 
-  // =============================================
+ // =============================================
   // ROTA: POST /api/usuarios — cadastra usuário
   // =============================================
   if (req.method === 'POST' && req.url === '/api/usuarios') {
     try {
-      const { nome, email, senha_hash } = await lerBody(req);
+      const { nome, email, senha } = await lerBody(req);
 
-      if (!nome || !email || !senha_hash) {
+      if (!nome || !email || !senha) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'nome, email e senha_hash são obrigatórios' }));
+        res.end(JSON.stringify({ error: 'nome, email e senha são obrigatórios' }));
         return;
       }
 
+      const senha_hash = await bcrypt.hash(senha, 10);
+
       const result = await pool.query(
-        'INSERT INTO usuarios (nome, email, senha_hash) VALUES ($1, $2, $3) RETURNING *',
+        'INSERT INTO usuarios (nome, email, senha_hash) VALUES ($1, $2, $3) RETURNING id, nome, email',
         [nome, email, senha_hash]
       );
 
       res.writeHead(201, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result.rows[0]));
     } catch (err) {
-      // erro de email duplicado
       if (err.code === '23505') {
         res.writeHead(409, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Email já cadastrado' }));
@@ -217,6 +218,38 @@ app.post('/api/login', async (req, res) => {
     return;
   }
 
+  // =============================================
+  // ROTA: POST /api/login — autentica usuário
+  // =============================================
+  if (req.method === 'POST' && req.url === '/api/login') {
+    try {
+      const { email, senha } = await lerBody(req);
+
+      const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+      const usuario = result.rows[0];
+
+      if (!usuario) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'E-mail ou senha incorretos.' }));
+        return;
+      }
+
+      const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
+      if (!senhaCorreta) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'E-mail ou senha incorretos.' }));
+        return;
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ token: 'gb_' + usuario.id + '_' + Date.now(), nome: usuario.nome }));
+    } catch (err) {
+      console.error('Erro no login:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Erro interno' }));
+    }
+    return;
+  }
   // =============================================
   // ROTA: GET /api/noticias — lista notícias
   // ROTA: POST /api/noticias — cadastra notícia
