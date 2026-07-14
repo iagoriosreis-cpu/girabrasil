@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Entrar — GiraBrasil</title>
+<link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+
+<div class="camada-fundo"></div>
+<canvas id="canvas-particulas"></canvas>
+
+<header class="cabecalho">
+  <a href="index.html" class="logo-topo"><span class="chama">🔥</span> GIRA-BRASIL</a>
+  <nav class="nav-topo">
+    <a href="index.html">INÍCIO</a>
+    <a href="girabot.html">GIRA-BOT</a>
+    <a href="#">SOBRE</a>
+  </nav>
+</header>
+
+<main class="conteudo-auth">
+  <div class="cartao-auth">
+    <div class="selo"><div class="traco"></div><span>Bem-vindo de volta</span></div>
+    <h1>Entrar na <em>Floresta</em></h1>
+    <p class="subtitulo">Acesse sua conta para comentar notícias, salvar artigos e continuar de onde parou.</p>
+
+    <div class="mensagem-erro" id="msg-erro">E-mail ou senha incorretos. Tente novamente.</div>
+
+    <form id="form-login">
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" placeholder="voce@email.com" required>
+      </div>
+
+      <div class="campo campo-senha">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="••••••••" required>
+        <button type="button" class="alternar-senha" onclick="alternarVisibilidade()">MOSTRAR</button>
+      </div>
+
+      <div class="linha-opcoes">
+        <label class="lembrar"><input type="checkbox"> Lembrar de mim</label>
+        <a href="#" class="esqueceu">Esqueceu a senha?</a>
+      </div>
+
+      <button type="submit" class="botao-principal">Entrar</button>
+    </form>
+
+    <div class="divisor">ou</div>
+
+    <p class="rodape-cartao">Ainda não tem conta? <a href="cadastro.html">Criar conta grátis</a></p>
+  </div>
+</main>
+
+<script>
+function alternarVisibilidade() {
+  const campo = document.getElementById('senha');
+  const btn = document.querySelector('.alternar-senha');
+  if (campo.type === 'password') {
+    campo.type = 'text';
+    btn.textContent = 'OCULTAR';
+  } else {
+    campo.type = 'password';
+    btn.textContent = 'MOSTRAR';
+  }
+}
+
+document.getElementById('form-login').addEventListener('submit', function(e) {
+  e.preventDefault();
+  // Aqui entraria a chamada para /api/usuarios/login
+  console.log('Login enviado (demonstração)');
+});
+
+// Partículas simples, mesmo espírito do background da home
+const canvas = document.getElementById('canvas-particulas');
+const ctx = canvas.getContext('2d');
+function ajustarTamanho() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+ajustarTamanho();
+window.addEventListener('resize', ajustarTamanho);
+
+const particulas = Array.from({length: 40}, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 1.5 + 0.5,
+  vy: Math.random() * 0.3 + 0.1,
+  alpha: Math.random() * 0.5 + 0.1
+}));
+
+function animar() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particulas.forEach(p => {
+    p.y -= p.vy;
+    if (p.y < 0) p.y = canvas.height;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(46, 204, 113, ${p.alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(animar);
+}
+animar();
+</script>
+
+</body>
+</html>

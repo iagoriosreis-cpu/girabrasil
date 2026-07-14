@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Criar conta — GiraBrasil</title>
+<link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+
+<div class="camada-fundo"></div>
+<canvas id="canvas-particulas"></canvas>
+
+<header class="cabecalho">
+  <a href="index.html" class="logo-topo"><span class="chama">🔥</span> GIRA-BRASIL</a>
+  <nav class="nav-topo">
+    <a href="index.html">INÍCIO</a>
+    <a href="girabot.html">GIRA-BOT</a>
+    <a href="#">SOBRE</a>
+  </nav>
+</header>
+
+<main class="conteudo-auth">
+  <div class="cartao-auth">
+    <div class="selo"><div class="traco"></div><span>Junte-se a nós</span></div>
+    <h1>Crie sua <em>conta</em></h1>
+    <p class="subtitulo">Cadastre-se para comentar notícias, participar do quiz e acompanhar a floresta de perto.</p>
+
+    <div class="mensagem-erro" id="msg-erro">Já existe uma conta com esse e-mail.</div>
+
+    <form id="form-cadastro">
+      <div class="campo">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
+      </div>
+
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" placeholder="voce@email.com" required>
+      </div>
+
+      <div class="campo campo-senha">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" oninput="atualizarForca(this.value)">
+        <button type="button" class="alternar-senha" onclick="alternarVisibilidade()">MOSTRAR</button>
+        <div class="forca-senha"><div class="barra" id="barra-forca"></div></div>
+      </div>
+
+      <div class="campo campo-senha">
+        <label for="confirmar-senha">Confirmar senha</label>
+        <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Repita a senha" required minlength="6">
+      </div>
+
+      <button type="submit" class="botao-principal">Criar conta</button>
+    </form>
+
+    <div class="divisor">ou</div>
+
+    <p class="rodape-cartao">Já tem conta? <a href="login.html">Entrar</a></p>
+  </div>
+</main>
+
+<script>
+function alternarVisibilidade() {
+  const campo = document.getElementById('senha');
+  const btn = document.querySelector('.alternar-senha');
+  if (campo.type === 'password') {
+    campo.type = 'text';
+    btn.textContent = 'OCULTAR';
+  } else {
+    campo.type = 'password';
+    btn.textContent = 'MOSTRAR';
+  }
+}
+
+function atualizarForca(valor) {
+  const barra = document.getElementById('barra-forca');
+  let forca = 0;
+  if (valor.length >= 6) forca += 33;
+  if (/[A-Z]/.test(valor) && /[0-9]/.test(valor)) forca += 33;
+  if (valor.length >= 10) forca += 34;
+  barra.style.width = forca + '%';
+  barra.style.background = forca < 40 ? '#e0645a' : forca < 80 ? '#f2b705' : '#2ecc71';
+}
+
+document.getElementById('form-cadastro').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const senha = document.getElementById('senha').value;
+  const confirmar = document.getElementById('confirmar-senha').value;
+  if (senha !== confirmar) {
+    const msg = document.getElementById('msg-erro');
+    msg.textContent = 'As senhas não coincidem.';
+    msg.style.display = 'block';
+    return;
+  }
+  // Aqui entraria a chamada para POST /api/usuarios
+  console.log('Cadastro enviado (demonstração)');
+});
+
+const canvas = document.getElementById('canvas-particulas');
+const ctx = canvas.getContext('2d');
+function ajustarTamanho() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+ajustarTamanho();
+window.addEventListener('resize', ajustarTamanho);
+
+const particulas = Array.from({length: 40}, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 1.5 + 0.5,
+  vy: Math.random() * 0.3 + 0.1,
+  alpha: Math.random() * 0.5 + 0.1
+}));
+
+function animar() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particulas.forEach(p => {
+    p.y -= p.vy;
+    if (p.y < 0) p.y = canvas.height;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(46, 204, 113, ${p.alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(animar);
+}
+animar();
+</script>
+
+</body>
+</html>
