@@ -92,6 +92,23 @@ const server = http.createServer(async (req, res) => {
     res.end();
     return;
   }
+  const bcrypt = require('bcrypt');
+
+app.post('/api/login', async (req, res) => {
+  const { email, senha } = req.body;
+  try {
+    const resultado = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+    const usuario = resultado.rows[0];
+    if (!usuario) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
+    if (!senhaCorreta) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+
+    res.json({ token: 'gb_' + usuario.id + '_' + Date.now(), nome: usuario.nome });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro no servidor. Tente novamente.' });
+  }
+});
 
   // =============================================
   // ROTA: POST /api/chat — Gira-Bot (sem alterações)
