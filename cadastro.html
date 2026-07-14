@@ -82,18 +82,41 @@ function atualizarForca(valor) {
   barra.style.background = forca < 40 ? '#e0645a' : forca < 80 ? '#f2b705' : '#2ecc71';
 }
 
-document.getElementById('form-cadastro').addEventListener('submit', function(e) {
+document.getElementById('form-cadastro').addEventListener('submit', async function(e) {
   e.preventDefault();
+  const msg = document.getElementById('msg-erro');
+  msg.style.display = 'none';
+
   const senha = document.getElementById('senha').value;
   const confirmar = document.getElementById('confirmar-senha').value;
   if (senha !== confirmar) {
-    const msg = document.getElementById('msg-erro');
     msg.textContent = 'As senhas não coincidem.';
     msg.style.display = 'block';
     return;
   }
-  // Aqui entraria a chamada para POST /api/usuarios
-  console.log('Cadastro enviado (demonstração)');
+
+  const nome = document.getElementById('nome').value;
+  const email = document.getElementById('email').value;
+
+  try {
+    const resposta = await fetch('/api/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, senha })
+    });
+    const dados = await resposta.json();
+
+    if (!resposta.ok) {
+      msg.textContent = dados.error === 'Email já cadastrado' ? 'Já existe uma conta com esse e-mail.' : 'Não foi possível criar a conta.';
+      msg.style.display = 'block';
+      return;
+    }
+
+    window.location.href = 'login.html';
+  } catch (err) {
+    msg.textContent = 'Não foi possível conectar ao servidor.';
+    msg.style.display = 'block';
+  }
 });
 
 const canvas = document.getElementById('canvas-particulas');
